@@ -1,0 +1,288 @@
+name: Blue/Green Deploy — Zero Downtime
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'diagrams/**'
+
+  # Allow manual trigger with colour override
+  workflow_dispatch:
+    inputs:
+      target_colour:
+        description: 'Deployment colour to promote (green)'
+        required: false
+        default: 'green'
+
+env:
+  NAMESPACE: zero-downtime-demo
+  ROUTE_NAME: nodejs-zero-downtime
+  FLAGSMITH_URL: ${{ secrets.FLAGSMITH_URL }}
+  FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+
+jobs:
+  # -------------------------------------------------------
+  # Job 1: Validate manifests before touching the cluster
+  # -------------------------------------------------------
+  validate:
+    name: Validate Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      - name: Authenticate to ROSA HCP
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: ${{ env.NAMESPACE }}
+          insecure_skip_tls_verify: false
+
+      - name: Dry-run blue manifests
+        run: |
+          oc apply \
+            -f manifests/blue/deployment.yaml \
+            -f manifests/blue/service.yaml \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Dry-run green manifests
+        run: |
+          oc apply \
+            -f manifests/green/deployment.yaml \
+            -f manifests/green/service.yaml \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Dry-run route manifest
+        run: |
+          oc apply \
+            -f manifests/route/haproxy-route.yaml \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Verify pipeline-deployer RBAC
+        run: |
+          chmod +x manifests/rbac/verify-rbac.sh
+          ./manifests/rbac/verify-rbac.sh
+
+  # -------------------------------------------------------
+  # Job 2: Deploy green (no live traffic yet)
+  # -------------------------------------------------------
+  deploy-green:
+    name: Deploy Green
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      - name: Authenticate to ROSA HCP
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: ${{ env.NAMESPACE }}
+          insecure_skip_tls_verify: false
+
+      - name: Ensure blue is running and serving 100% traffic
+        run: |
+          echo "==> Confirming blue is baseline before green deploy..."
+          oc rollout status deployment/nodejs-blue \
+            --namespace ${{ env.NAMESPACE }} \
+            --timeout=120s
+
+          BLUE_WEIGHT=$(oc get route ${{ env.ROUTE_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            -o jsonpath='{.spec.to.weight}')
+
+          if [ "${BLUE_WEIGHT}" != "100" ]; then
+            echo "WARNING: Blue weight is ${BLUE_WEIGHT}, not 100."
+            echo "Resetting to 100% blue before deploying green..."
+            ./scripts/shift-traffic.sh 0
+          fi
+
+          echo "  ✓ Blue confirmed at 100% traffic"
+
+      - name: Deploy green deployment
+        run: |
+          oc apply \
+            -f manifests/green/deployment.yaml \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Deploy green service
+        run: |
+          oc apply \
+            -f manifests/green/service.yaml \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Wait for green rollout
+        run: |
+          oc rollout status deployment/nodejs-green \
+            --namespace ${{ env.NAMESPACE }} \
+            --timeout=180s
+
+      - name: Verify green deployment health
+        run: |
+          chmod +x scripts/verify-deployment.sh
+          ./scripts/verify-deployment.sh green
+
+      - name: Run smoke test against green pods directly
+        run: |
+          chmod +x scripts/smoke-test.sh
+          # Get a green pod and test directly — no Route traffic yet
+          POD=$(oc get pods \
+            --namespace ${{ env.NAMESPACE }} \
+            --selector="app=nodejs-zero-downtime,deployment-colour=green" \
+            --field-selector=status.phase=Running \
+            -o jsonpath='{.items[0].metadata.name}')
+
+          echo "==> Testing green pod directly: ${POD}"
+
+          HEALTH=$(oc exec "${POD}" \
+            --namespace ${{ env.NAMESPACE }} \
+            -- curl -s http://localhost:8080/health)
+
+          echo "Health response: ${HEALTH}"
+
+          if echo "${HEALTH}" | grep -q '"status":"healthy"'; then
+            echo "  ✓ Green pod health check passed"
+          else
+            echo "  ✗ Green pod health check failed"
+            exit 1
+          fi
+
+          VERSION=$(oc exec "${POD}" \
+            --namespace ${{ env.NAMESPACE }} \
+            -- curl -s http://localhost:8080/version)
+
+          echo "Version response: ${VERSION}"
+
+          if echo "${VERSION}" | grep -q '"colour":"green"'; then
+            echo "  ✓ Green pod colour confirmed"
+          else
+            echo "  ✗ Green pod returned unexpected colour"
+            exit 1
+          fi
+
+  # -------------------------------------------------------
+  # Job 3: Check Flagsmith gate before any traffic shift
+  # -------------------------------------------------------
+  check-flag:
+    name: Check Flagsmith Gate
+    runs-on: ubuntu-latest
+    needs: deploy-green
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Flagsmith gate flag
+        run: |
+          chmod +x scripts/validate-flags.sh
+          ./scripts/validate-flags.sh
+        env:
+          FLAGSMITH_URL: ${{ secrets.FLAGSMITH_URL }}
+          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+
+  # -------------------------------------------------------
+  # Job 4: Gradual traffic shift — 10% → 50% → 100%
+  # -------------------------------------------------------
+  shift-traffic:
+    name: Shift Traffic to Green
+    runs-on: ubuntu-latest
+    needs: check-flag
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      - name: Authenticate to ROSA HCP
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: ${{ env.NAMESPACE }}
+          insecure_skip_tls_verify: false
+
+      - name: Get Route URL
+        id: route
+        run: |
+          ROUTE_URL=$(oc get route ${{ env.ROUTE_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            -o jsonpath='{.spec.host}')
+          echo "url=${ROUTE_URL}" >> $GITHUB_OUTPUT
+          echo "Route URL: ${ROUTE_URL}"
+
+      - name: Stage 1 — Shift 10% traffic to green
+        run: |
+          chmod +x scripts/shift-traffic.sh
+          ./scripts/shift-traffic.sh 10
+
+      - name: Stage 1 — Wait and observe
+        run: |
+          echo "==> Observing 10% green traffic for 30 seconds..."
+          sleep 30
+
+      - name: Stage 1 — Verify error rate acceptable
+        run: |
+          echo "==> Checking green pods are still healthy at 10% traffic..."
+          chmod +x scripts/verify-deployment.sh
+          ./scripts/verify-deployment.sh green
+
+      - name: Stage 2 — Shift 50% traffic to green
+        run: |
+          ./scripts/shift-traffic.sh 50
+
+      - name: Stage 2 — Wait and observe
+        run: |
+          echo "==> Observing 50% green traffic for 30 seconds..."
+          sleep 30
+
+      - name: Stage 2 — Verify error rate acceptable
+        run: |
+          echo "==> Checking green pods are still healthy at 50% traffic..."
+          ./scripts/verify-deployment.sh green
+
+      - name: Stage 3 — Shift 100% traffic to green
+        run: |
+          ./scripts/shift-traffic.sh 100
+
+      - name: Stage 3 — Run full smoke test
+        run: |
+          chmod +x scripts/smoke-test.sh
+          export ROUTE_URL=${{ steps.route.outputs.url }}
+          ./scripts/smoke-test.sh green
+
+      - name: Verify route weights final state
+        run: |
+          ./scripts/verify-deployment.sh route-weights
+
+      - name: Deployment summary
+        run: |
+          ROUTE_URL=${{ steps.route.outputs.url }}
+          echo ""
+          echo "==> DEPLOYMENT COMPLETE"
+          echo "    100% traffic on green"
+          echo "    Blue remains running — rollback available"
+          echo "    Route: https://${ROUTE_URL}/version"
+          echo ""
+          echo "    To rollback if needed:"
+          echo "    Trigger workflow: rollback.yml"

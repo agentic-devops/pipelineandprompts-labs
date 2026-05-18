@@ -1,0 +1,30 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nodejs-zero-downtime
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    project: zero-downtime-deployments
+    canary-stage: "50-percent"
+  annotations:
+    description: "Stage 2 canary — 50% green, 50% blue"
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/disable_cookies: "true"
+    haproxy.router.openshift.io/timeout: 30s
+spec:
+  host: ""
+  to:
+    kind: Service
+    name: nodejs-blue
+    weight: 50
+  alternateBackends:
+    - kind: Service
+      name: nodejs-green
+      weight: 50
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

@@ -1,0 +1,23 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: nodejs-zero-downtime
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: nodejs-zero-downtime:latest
+  source:
+    type: Git
+    git:
+      uri: https://github.com/anthropics/claude-code.git
+      ref: main
+    contextDir: app
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  triggers: []

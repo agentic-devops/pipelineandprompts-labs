@@ -1,0 +1,145 @@
+name: Validate Manifests — PR Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'manifests/**'
+      - 'flagsmith/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+
+env:
+  NAMESPACE: zero-downtime-demo
+
+jobs:
+  validate:
+    name: Validate Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      - name: Authenticate to ROSA HCP
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: ${{ env.NAMESPACE }}
+          insecure_skip_tls_verify: false
+
+      - name: Dry-run all manifests
+        run: |
+          echo "==> Dry-run: namespace"
+          oc apply -f manifests/namespace/namespace.yaml \
+            --dry-run=client
+
+          echo "==> Dry-run: RBAC"
+          oc apply -f manifests/rbac/ \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+          echo "==> Dry-run: blue"
+          oc apply -f manifests/blue/ \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+          echo "==> Dry-run: green"
+          oc apply -f manifests/green/ \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+          echo "==> Dry-run: route"
+          oc apply -f manifests/route/ \
+            --dry-run=client \
+            --namespace ${{ env.NAMESPACE }}
+
+      - name: Verify scripts are executable
+        run: |
+          echo "==> Checking script permissions..."
+          for SCRIPT in scripts/*.sh app/build-and-push.sh \
+            manifests/rbac/verify-rbac.sh; do
+            if [ -x "${SCRIPT}" ]; then
+              echo "  ✓ ${SCRIPT}"
+            else
+              echo "  ✗ ${SCRIPT} is not executable"
+              echo "    Run: chmod +x ${SCRIPT}"
+              exit 1
+            fi
+          done
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "==> Scanning for hardcoded secrets..."
+          FOUND=0
+
+          # Check for common secret patterns
+          if grep -r "changeme-before-applying" manifests/ \
+            flagsmith/ --include="*.yaml" -l 2>/dev/null; then
+            echo "WARNING: Default placeholder passwords found."
+            echo "         Update secrets before applying to cluster."
+            # Warning only — not a blocker for PR
+          fi
+
+          if grep -rE \
+            "(password|token|secret|key)\s*[:=]\s*['\"]?[a-zA-Z0-9+/]{20,}" \
+            manifests/ flagsmith/ \
+            --include="*.yaml" \
+            --exclude="*secret.yaml" \
+            -l 2>/dev/null; then
+            echo "ERROR: Possible hardcoded secret found in manifests."
+            echo "       Use secretKeyRef or Sealed Secrets instead."
+            FOUND=1
+          fi
+
+          if [ $FOUND -gt 0 ]; then
+            exit 1
+          fi
+
+          echo "  ✓ No hardcoded secrets detected"
+
+      - name: Verify RBAC is namespace-scoped
+        run: |
+          echo "==> Verifying RBAC does not use ClusterRole..."
+
+          if grep -l "kind: ClusterRole" manifests/rbac/*.yaml \
+            2>/dev/null; then
+            echo "ERROR: ClusterRole found in manifests/rbac/"
+            echo "       Pipeline RBAC must be namespace-scoped (Role only)"
+            exit 1
+          fi
+
+          echo "  ✓ RBAC is namespace-scoped"
+
+      - name: Verify SCC compliance
+        run: |
+          echo "==> Checking for privileged SCC requirements..."
+
+          if grep -r "privileged" manifests/ --include="*.yaml" \
+            2>/dev/null; then
+            echo "ERROR: Privileged SCC reference found."
+            echo "       All workloads must run under restricted-v2"
+            echo "       on ROSA HCP."
+            exit 1
+          fi
+
+          if grep -r "runAsUser: 0" manifests/ --include="*.yaml" \
+            2>/dev/null; then
+            echo "ERROR: runAsUser: 0 (root) found in manifests."
+            echo "       Not permitted under restricted-v2 SCC."
+            exit 1
+          fi
+
+          echo "  ✓ No privileged SCC requirements detected"
+
+      - name: Validation summary
+        run: |
+          echo ""
+          echo "==> All manifest validations passed"
+          echo "    Safe to merge to main"

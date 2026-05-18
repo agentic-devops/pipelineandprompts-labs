@@ -1,0 +1,81 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nodejs-zero-downtime
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    project: zero-downtime-deployments
+    variant: multi-namespace
+  annotations:
+    description: >
+      Multi-namespace variant — blue and green in separate namespaces.
+      Requires ExternalName services to bridge namespaces.
+      See examples/05-multi-namespace/README.md before applying.
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/disable_cookies: "true"
+    haproxy.router.openshift.io/timeout: 30s
+spec:
+  host: ""
+  to:
+    kind: Service
+    name: nodejs-blue-proxy
+    weight: 100
+  alternateBackends:
+    - kind: Service
+      name: nodejs-green-proxy
+      weight: 0
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+
+---
+# ExternalName service — proxies to blue in its own namespace
+# Replace blue-namespace with your actual blue namespace name
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-blue-proxy
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    variant: multi-namespace
+  annotations:
+    description: >
+      ExternalName service bridging to blue deployment
+      in a separate namespace. Requires network policy
+      allowing cross-namespace traffic.
+spec:
+  type: ExternalName
+  externalName: nodejs-blue.blue-namespace.svc.cluster.local
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+
+---
+# ExternalName service — proxies to green in its own namespace
+# Replace green-namespace with your actual green namespace name
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-green-proxy
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    variant: multi-namespace
+  annotations:
+    description: >
+      ExternalName service bridging to green deployment
+      in a separate namespace. Requires network policy
+      allowing cross-namespace traffic.
+spec:
+  type: ExternalName
+  externalName: nodejs-green.green-namespace.svc.cluster.local
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,100 @@
+name: Rollback — Shift Traffic to Blue
+
+on:
+  # Manual trigger only — never automatic
+  # Requires explicit human decision to rollback
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for rollback (required for audit trail)'
+        required: true
+      disable_flag:
+        description: 'Disable Flagsmith gate flag after rollback?'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+env:
+  NAMESPACE: zero-downtime-demo
+  ROUTE_NAME: nodejs-zero-downtime
+
+jobs:
+  rollback:
+    name: Rollback to Blue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log rollback reason
+        run: |
+          echo "==> ROLLBACK INITIATED"
+          echo "    Triggered by: ${{ github.actor }}"
+          echo "    Reason: ${{ github.event.inputs.reason }}"
+          echo "    Time: $(date -u)"
+          echo "    Disable Flagsmith flag: ${{ github.event.inputs.disable_flag }}"
+
+      - name: Install oc CLI
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
+      - name: Authenticate to ROSA HCP
+        uses: redhat-actions/oc-login@v1
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: ${{ env.NAMESPACE }}
+          insecure_skip_tls_verify: false
+
+      - name: Execute rollback
+        run: |
+          chmod +x scripts/rollback.sh
+          if [ "${{ github.event.inputs.disable_flag }}" = "true" ]; then
+            ./scripts/rollback.sh --disable-flag
+          else
+            ./scripts/rollback.sh
+          fi
+        env:
+          FLAGSMITH_URL: ${{ secrets.FLAGSMITH_URL }}
+          FLAGSMITH_API_KEY: ${{ secrets.FLAGSMITH_API_KEY }}
+
+      - name: Verify blue is serving traffic
+        run: |
+          chmod +x scripts/verify-deployment.sh
+          ./scripts/verify-deployment.sh blue
+
+      - name: Get Route URL
+        id: route
+        run: |
+          ROUTE_URL=$(oc get route ${{ env.ROUTE_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            -o jsonpath='{.spec.host}')
+          echo "url=${ROUTE_URL}" >> $GITHUB_OUTPUT
+
+      - name: Run smoke test on blue
+        run: |
+          chmod +x scripts/smoke-test.sh
+          export ROUTE_URL=${{ steps.route.outputs.url }}
+          ./scripts/smoke-test.sh blue
+
+      - name: Rollback summary
+        run: |
+          echo ""
+          echo "==> ROLLBACK COMPLETE"
+          echo "    100% traffic on blue"
+          echo "    Triggered by: ${{ github.actor }}"
+          echo "    Reason: ${{ github.event.inputs.reason }}"
+          echo "    Route: https://${{ steps.route.outputs.url }}/version"
+          echo ""
+          echo "    Next steps:"
+          echo "    1. Investigate green failure"
+          echo "    2. Check logs:"
+          echo "       oc logs -l deployment-colour=green"
+          echo "       -n ${{ env.NAMESPACE }}"
+          echo "    3. Fix issue, rebuild green image"
+          echo "    4. Re-enable Flagsmith flag when ready"
+          echo "    5. Re-run blue-green-deploy.yml"
