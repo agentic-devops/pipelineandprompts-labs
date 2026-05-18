@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-green
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    deployment-colour: green
+    project: zero-downtime-deployments
+  annotations:
+    description: "Service for green deployment — targeted by HAProxy Route"
+spec:
+  selector:
+    app: nodejs-zero-downtime
+    deployment-colour: green
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

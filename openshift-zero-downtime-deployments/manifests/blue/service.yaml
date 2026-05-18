@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-blue
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    deployment-colour: blue
+    project: zero-downtime-deployments
+  annotations:
+    description: "Service for blue deployment — targeted by HAProxy Route"
+spec:
+  selector:
+    app: nodejs-zero-downtime
+    deployment-colour: blue
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

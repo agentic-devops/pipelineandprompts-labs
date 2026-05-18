@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flagsmith-postgres
+  namespace: zero-downtime-demo
+  labels:
+    app: flagsmith-postgres
+    project: zero-downtime-deployments
+spec:
+  selector:
+    app: flagsmith-postgres
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP

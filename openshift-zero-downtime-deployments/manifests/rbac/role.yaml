@@ -1,0 +1,48 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pipeline-deployer-role
+  namespace: zero-downtime-demo
+  labels:
+    app.kubernetes.io/managed-by: pipeline
+    project: zero-downtime-deployments
+rules:
+  # Deployments — needed to apply blue/green manifests and check rollout status
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+  # ReplicaSets — needed for rollout status checks
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  # Pods — needed for smoke test readiness checks
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+
+  # Pod logs — needed for smoke test failure diagnosis
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+
+  # Services — needed to apply blue/green service manifests
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+  # Routes — needed to patch HAProxy Route weights
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+  # ConfigMaps — needed for pipeline state tracking
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+
+  # Events — needed for deployment diagnostics
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch"]

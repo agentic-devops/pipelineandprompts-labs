@@ -1,0 +1,15 @@
+{
+  "description": "Exportable Flagsmith flag definitions for zero-downtime-demo",
+  "project": "pipelineandprompts",
+  "environment": "production",
+  "flags": [
+    {
+      "name": "enable-green-deployment",
+      "type": "FLAG",
+      "description": "Gates traffic shifting to green deployment. Enable before pipeline runs traffic shift steps. Disable to halt any in-progress traffic shift immediately.",
+      "default_enabled": false,
+      "tags": ["deployment", "pipeline-gate"]
+    }
+  ],
+  "notes": "Import this via Flagsmith UI or API after initial setup. See docs/flagsmith-setup.md for full configuration steps."
+}

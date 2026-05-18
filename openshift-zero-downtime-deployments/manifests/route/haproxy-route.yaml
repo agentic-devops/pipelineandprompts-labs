@@ -1,0 +1,33 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nodejs-zero-downtime
+  namespace: zero-downtime-demo
+  labels:
+    app: nodejs-zero-downtime
+    project: zero-downtime-deployments
+  annotations:
+    description: "HAProxy Route with weight splitting for blue/green deployments"
+    # Load balancing algorithm — roundrobin distributes across both services
+    haproxy.router.openshift.io/balance: roundrobin
+    # Disable cookie-based session stickiness
+    # Required for weight splitting to work correctly
+    haproxy.router.openshift.io/disable_cookies: "true"
+    # Timeout settings suitable for Node.js app
+    haproxy.router.openshift.io/timeout: 30s
+spec:
+  host: ""  # Leave empty — OpenShift assigns automatically on ROSA HCP
+  to:
+    kind: Service
+    name: nodejs-blue
+    weight: 100
+  alternateBackends:
+    - kind: Service
+      name: nodejs-green
+      weight: 0
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
