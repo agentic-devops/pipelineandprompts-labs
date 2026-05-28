@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  runbook-rag:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - CHROMA_PATH=/app/chroma_db
+      - RUNBOOKS_PATH=/app/runbooks
+    volumes:
+      # Persist vector store across container restarts
+      - ./chroma_db:/app/chroma_db
+      # Mount runbooks for easy updates without rebuilding
+      - ./runbooks:/app/runbooks
+    restart: unless-stopped

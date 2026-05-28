@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+openai
+chromadb
+langchain-text-splitters
+pydantic-settings
+python-dotenv
+pytest
+httpx

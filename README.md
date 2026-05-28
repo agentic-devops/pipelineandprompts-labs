@@ -8,7 +8,7 @@ AI + Platform Engineering Lab
 - agentic-platform-engineering
 - n8n-agentic-workflows
 - mcp-for-kubernetes
-- rag-for-openshift-docs
+- rag-runbook-assistant
 - terraform-rosa-ai-lab
 - awesome-ai-platform-engineering
 
