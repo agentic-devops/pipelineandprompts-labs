@@ -1,0 +1,25 @@
+# Kubernetes Ingress — use this instead of route.yaml on non-OpenShift clusters
+# Requires an ingress controller (nginx, traefik, etc.)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: platform-mcp-server
+  namespace: platform-tools
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: mcp.platform.your-domain.com   # AUTHOR: replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: platform-mcp-server
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - mcp.platform.your-domain.com
+      secretName: platform-mcp-tls

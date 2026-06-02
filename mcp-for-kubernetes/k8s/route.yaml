@@ -1,0 +1,15 @@
+# OpenShift Route — remove if running on vanilla Kubernetes (use Ingress instead)
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: platform-mcp-server
+  namespace: platform-tools
+spec:
+  to:
+    kind: Service
+    name: platform-mcp-server
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

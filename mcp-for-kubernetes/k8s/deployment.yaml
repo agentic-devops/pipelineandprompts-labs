@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-mcp-server
+  namespace: platform-tools
+  labels:
+    app: platform-mcp-server
+    version: "1.0.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-mcp-server
+  template:
+    metadata:
+      labels:
+        app: platform-mcp-server
+    spec:
+      serviceAccountName: platform-mcp-sa
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault   # Requires OpenShift 4.11+ / restricted-v2 SCC
+                                 # Remove this field if using older 'restricted' SCC
+      containers:
+        - name: mcp-server
+          image: your-registry/platform-mcp:latest  # AUTHOR: replace with your registry
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+          env:
+            - name: MCP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: platform-mcp-secrets
+                  key: api-key
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3

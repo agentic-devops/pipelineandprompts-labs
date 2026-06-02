@@ -1,0 +1,6 @@
+apiVersion: v2
+name: platform-mcp
+description: Platform MCP Server — AI in the Stack #03
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

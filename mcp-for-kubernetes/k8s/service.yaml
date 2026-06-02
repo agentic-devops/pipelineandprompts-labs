@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-mcp-server
+  namespace: platform-tools
+  labels:
+    app: platform-mcp-server
+spec:
+  selector:
+    app: platform-mcp-server
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP

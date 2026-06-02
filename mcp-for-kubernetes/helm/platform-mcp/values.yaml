@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  repository: your-registry/platform-mcp   # AUTHOR: replace
+  tag: latest                               # AUTHOR: pin to digest in production
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  host: mcp.platform.your-domain.com        # AUTHOR: replace if enabling ingress
+
+route:
+  enabled: true     # Set false on non-OpenShift clusters
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+rateLimit:
+  callsPerMinute: 60
+
+# Secret must be pre-created or managed externally
+# Never set apiKey here — use k8s/secret.yaml or Vault integration
+existingSecret: platform-mcp-secrets
+secretKey: api-key
+
+networkPolicy:
+  enabled: true
+  apiServerPort: 6443   # AUTHOR: confirm for your cluster

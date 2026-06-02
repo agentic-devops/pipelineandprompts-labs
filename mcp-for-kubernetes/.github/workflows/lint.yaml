@@ -1,0 +1,39 @@
+# .github/workflows/lint.yaml
+# Lints Python source and validates Kubernetes YAML on every PR
+
+name: Lint
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install ruff
+      - run: ruff check src/
+
+  yaml-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+            | tar xz && sudo mv kubeconform /usr/local/bin/
+      - name: Validate k8s manifests
+        run: |
+          kubeconform -strict -summary \
+            -ignore-missing-schemas \
+            k8s/namespace.yaml \
+            k8s/serviceaccount.yaml \
+            k8s/rbac.yaml \
+            k8s/deployment.yaml \
+            k8s/service.yaml \
+            k8s/networkpolicy.yaml \
+            k8s/poddisruptionbudget.yaml

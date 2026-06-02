@@ -1,0 +1,6 @@
+# AUTHOR: pin versions before production build
+mcp>=1.0.0
+kubernetes>=28.1.0
+starlette>=0.36.0
+uvicorn>=0.27.0
+pydantic>=2.0.0
