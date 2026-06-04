@@ -5,7 +5,12 @@ from typing import Optional
 
 
 class KubernetesClient:
-    def __init__(self, in_cluster: bool = True):
+    def __init__(self, in_cluster: bool = None):
+        if in_cluster is None:
+            # Auto-detect: if running inside a cluster, the service account token exists
+            import os
+            in_cluster = os.path.exists("/var/run/secrets/kubernetes.io/serviceaccount/token")
+
         if in_cluster:
             config.load_incluster_config()
         else:

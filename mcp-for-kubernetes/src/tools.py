@@ -10,7 +10,7 @@ from audit import log_tool_call
 from rate_limiter import RateLimiter
 
 logger = logging.getLogger(__name__)
-k8s = KubernetesClient(in_cluster=True)
+k8s = KubernetesClient()
 limiter = RateLimiter(calls_per_minute=60)
 
 

@@ -24,8 +24,8 @@ spec:
                                  # Remove this field if using older 'restricted' SCC
       containers:
         - name: mcp-server
-          image: your-registry/platform-mcp:latest  # AUTHOR: replace with your registry
-          imagePullPolicy: Always
+          image: platform-mcp:local  # AUTHOR: replace with your registry
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
               name: http
