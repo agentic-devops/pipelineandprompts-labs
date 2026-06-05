@@ -1,4 +1,4 @@
-# ai-stack-02-rag-runbooks
+# rag-runbook-assistant
 
 A FastAPI service that makes internal runbooks semantically searchable using RAG (Retrieval-Augmented Generation). Engineers ask questions in natural language and get answers grounded in your actual documentation, with source citations.
 
