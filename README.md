@@ -11,6 +11,7 @@ AI + Platform Engineering Lab
 - rag-runbook-assistant
 - terraform-rosa-ai-lab
 - awesome-ai-platform-engineering
+- self-healing-pipeline-demo
 
 ## Focus Areas
 
