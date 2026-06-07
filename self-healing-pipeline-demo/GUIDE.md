@@ -70,8 +70,8 @@ Before starting anything, know which ports are used and why they're not the obvi
 
 | Service | Host port | Why not the default? |
 |---------|-----------|----------------------|
-| waybill-blue | **7070** | Port 8080 is used by any app  |
-| waybill-green | **9091** | Port 8081 is used by any app  |
+| waybill-blue | **7070** | Port 8080 is used by pgweb on a typical Mac dev setup |
+| waybill-green | **9091** | Port 8081 is used by pgweb portfolio instance |
 | postgres | **5433** | Port 5432 is used by a local Postgres installation |
 
 Inside Docker, containers talk to each other on standard ports (app on 8000, postgres on 5432).
