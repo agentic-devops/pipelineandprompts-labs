@@ -1,1 +1,126 @@
+# .github/workflows/deploy.yml
+name: Self-Healing Deploy
 
+on:
+  push:
+    branches: [main]
+
+# Required for GHCR push. Organisations with restrictive default token
+# permissions must grant these explicitly; without them the image push
+# returns 403 even with a valid GITHUB_TOKEN.
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: docker build -t $IMAGE_NAME:${{ github.sha }} .
+
+      # Registry pushes are the most common transient failure source
+      - name: Push image (with retry)
+        uses: ./.github/actions/retry-step
+        with:
+          command: docker push $IMAGE_NAME:${{ github.sha }}
+          max_attempts: "4"
+          initial_delay: "10"
+
+      - name: Detect active slot
+        id: slot
+        run: |
+          ACTIVE=$(ssh deploy@${{ secrets.SERVER_IP }} \
+            "cat /etc/deploy/active-slot 2>/dev/null || echo blue")
+          echo "active=$ACTIVE" >> $GITHUB_OUTPUT
+          if [ "$ACTIVE" = "blue" ]; then
+            echo "target=green" >> $GITHUB_OUTPUT
+          else
+            echo "target=blue" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to inactive slot
+        run: |
+          TARGET=${{ steps.slot.outputs.target }}
+          ssh deploy@${{ secrets.SERVER_IP }} << EOF
+            export IMAGE_NAME=$IMAGE_NAME
+            export ${TARGET^^}_TAG=${{ github.sha }}
+            docker compose pull waybill-$TARGET
+            docker compose up -d --no-deps waybill-$TARGET
+          EOF
+
+      # Smoke tests run over a network — give them room for cold starts
+      - name: Smoke tests (with retry)
+        uses: ./.github/actions/retry-step
+        with:
+          command: >
+            bash scripts/smoke-test.sh
+            ${{ secrets.SERVER_IP }}
+            ${{ steps.slot.outputs.target }}
+          max_attempts: "3"
+          initial_delay: "8"
+
+      - name: Swap traffic to new slot
+        run: |
+          bash scripts/swap-traffic.sh \
+            ${{ secrets.SERVER_IP }} \
+            ${{ steps.slot.outputs.target }}
+
+      # ── Failure path ──────────────────────────────────────────────────────────
+      # Alert first — on-call needs context before rollback begins
+      - name: Classify and alert on failure
+        if: failure()
+        run: |
+          python3 scripts/alert.py \
+            "deploy failed on ${{ github.ref_name }} — run ${{ github.run_id }}"
+        env:
+          SLACK_WEBHOOK_URL:     ${{ secrets.SLACK_WEBHOOK_URL }}
+          PAGERDUTY_ROUTING_KEY: ${{ secrets.PAGERDUTY_ROUTING_KEY }}
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          TARGET="${{ steps.slot.outputs.target }}"
+          # Guard: if slot detection failed earlier, TARGET is empty
+          if [ -z "$TARGET" ]; then
+            echo "::error::Slot detection failed — manual rollback required"
+            exit 1
+          fi
+          ssh deploy@${{ secrets.SERVER_IP }} bash << EOF
+            set -euo pipefail
+            docker compose stop --timeout 30 waybill-$TARGET
+            # Verify the container actually stopped.
+            # docker compose ps --format json outputs a JSON array in Compose v2.20+
+            # and JSONL in earlier v2 releases. Parse both safely.
+            STATUS=\$(docker compose ps waybill-\$TARGET --format json \
+              | python3 -c "
+import sys, json
+raw = sys.stdin.read().strip()
+try:
+    d = json.loads(raw)
+    obj = d[0] if isinstance(d, list) else d
+    print(obj.get('State', 'unknown'))
+except Exception:
+    print('unknown')
+" 2>/dev/null || echo "unknown")
+            echo "Container state after stop: \$STATUS"
+            if [ "\$STATUS" = "running" ]; then
+              echo "::error::Container did not stop — manual intervention required"
+              exit 1
+            fi
+          EOF
+          echo "Active slot unchanged. Rollback complete."
