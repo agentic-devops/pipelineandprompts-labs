@@ -150,16 +150,24 @@ def send_pagerduty(message: str) -> None:
         print("[alert] PAGERDUTY_ROUTING_KEY not set — skipping PagerDuty", file=sys.stderr)
         return
 
+    repo   = os.getenv("GITHUB_REPOSITORY", "unknown/repo")
+    run_id = os.getenv("GITHUB_RUN_ID", "0")
+    # dedup_key groups all alerts from the same run into one incident.
+    # Without it, a flapping pipeline opens a new incident on every failure.
+    # A resolve event keyed to the same value closes the incident automatically.
+    dedup_key = f"{repo}/run/{run_id}"
+
     payload = {
         "routing_key":  key,
         "event_action": "trigger",
+        "dedup_key":    dedup_key,
         "payload": {
             "summary":  message,
             "severity": "critical",
             "source":   "github-actions",
             "custom_details": {
-                "repository": os.getenv("GITHUB_REPOSITORY"),
-                "run_id":     os.getenv("GITHUB_RUN_ID"),
+                "repository": repo,
+                "run_id":     run_id,
                 "sha":        os.getenv("GITHUB_SHA"),
             },
         },
