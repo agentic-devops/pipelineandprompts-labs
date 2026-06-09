@@ -1,1 +1,25 @@
+# .github/actions/retry-step/action.yml
+name: Retry Step
+description: Run a shell command with exponential backoff retry
 
+inputs:
+  command:
+    description: Shell command to execute (passed to bash -c)
+    required: true
+  max_attempts:
+    description: Maximum number of attempts including the first try
+    default: "3"
+  initial_delay:
+    description: Initial wait between retries in seconds
+    default: "5"
+
+runs:
+  using: composite
+  steps:
+    - name: Run with retry
+      shell: bash
+      run: |
+        source "$GITHUB_WORKSPACE/scripts/retry.sh"
+        retry "${{ inputs.max_attempts }}" \
+              "${{ inputs.initial_delay }}" \
+              bash -c "${{ inputs.command }}"
