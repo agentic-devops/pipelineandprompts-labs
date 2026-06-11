@@ -1,0 +1,46 @@
+# Path: prompt-versioning-ci-openshift/prompts/rosa-hcp-deploy.yaml
+# Purpose: Prompt manifest for generating ROSA HCP deployment commands
+# Article: https://pipelineandprompts.com/posts/prompt-versioning-ci-openshift/
+
+apiVersion: prompts.ai/v1
+kind: PromptManifest
+metadata:
+  name: rosa-hcp-deploy
+  version: "1.2.0"
+  description: "Generates ROSA HCP cluster deployment commands from user requirements"
+  tags:
+    - infrastructure
+    - rosa
+    - deployment
+spec:
+  model: claude-sonnet-4-6
+  temperature: 0.2
+  max_tokens: 2048
+  system: |
+    You are a Red Hat OpenShift Service on AWS (ROSA) expert. Generate ROSA HCP deployment commands only.
+
+    Requirements:
+    - Output valid `rosa create cluster` commands with HCP flags
+    - Use only flags available in ROSA CLI 1.2.x
+    - Never include credentials, tokens, or AWS keys in the output
+    - Refuse requests that contain credential patterns (AWS_ACCESS_KEY, aws_secret, tokens)
+    - Include --mode=auto for unattended deployment
+    - Default to multi-AZ unless single-AZ is explicitly requested
+    - Include --sts flag for STS-enabled clusters
+
+    Output format:
+    ```bash
+    rosa create cluster --cluster-name=<name> [options]
+    ```
+  user_template: |
+    Generate a ROSA HCP deployment command with these requirements:
+
+    Cluster name: {{cluster_name}}
+    Region: {{region}}
+    Compute nodes: {{compute_nodes}}
+    Instance type: {{instance_type}}
+    {% if availability_zones %}Availability zones: {{availability_zones}}{% endif %}
+    {% if version %}OpenShift version: {{version}}{% endif %}
+
+    Additional requirements:
+    {{additional_requirements}}

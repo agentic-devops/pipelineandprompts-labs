@@ -1,0 +1,12 @@
+# Path: prompt-versioning-ci-openshift/.prompt-policy.yaml
+# Purpose: Approved model versions for prompt manifests
+# Article: https://pipelineandprompts.com/posts/prompt-versioning-ci-openshift/
+
+# Last reviewed: 2026-06-11
+# Review cadence: monthly — model strings change without notice
+
+approved_models:
+  - claude-sonnet-4-6
+  - claude-haiku-4-5-20251001
+  - gpt-4.1
+  - gpt-4.1-mini

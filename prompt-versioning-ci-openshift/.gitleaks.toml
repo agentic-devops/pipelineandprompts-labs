@@ -1,0 +1,39 @@
+# Path: prompt-versioning-ci-openshift/.gitleaks.toml
+# Purpose: Secret detection configuration extending default gitleaks ruleset
+# Article: https://pipelineandprompts.com/posts/prompt-versioning-ci-openshift/
+
+# Extend the default gitleaks configuration
+[extend]
+useDefault = true
+
+# Custom rules for cloud credentials and Kubernetes secrets
+
+[[rules]]
+id = "azure-subscription-id"
+description = "Azure Subscription ID (GUID format)"
+regex = '''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
+tags = ["azure", "subscription"]
+
+[[rules]]
+id = "aws-account-id"
+description = "AWS Account ID (12-digit numeric)"
+regex = '''\b\d{12}\b'''
+tags = ["aws", "account"]
+
+[[rules]]
+id = "openshift-api-token"
+description = "OpenShift API token (sha256~ prefix)"
+regex = '''sha256~[A-Za-z0-9_-]{43}'''
+tags = ["openshift", "token", "kubernetes"]
+
+[[rules]]
+id = "kubeconfig-fragment"
+description = "Kubeconfig fragment detection"
+regex = '''(clusters:|users:|contexts:)\s*\n\s*-\s+'''
+tags = ["kubernetes", "kubeconfig"]
+
+# Allowlist test fixtures directory
+[allowlist]
+paths = [
+  '''test/fixtures/.*'''
+]
