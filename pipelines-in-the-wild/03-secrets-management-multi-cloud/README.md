@@ -43,21 +43,25 @@ See [diagrams/secrets-management-architecture.png](diagrams/secrets-management-a
 
 ## Provider Support
 
-| Provider | Auth method | Manifest |
-|---|---|---|
-| AWS Secrets Manager | IRSA via STS (JWT) | `manifests/secretstore/*-aws.yaml` |
-| Azure Key Vault | Workload Identity | `manifests/secretstore/*-azure.yaml` |
-| HashiCorp Vault | Kubernetes auth | `manifests/secretstore/*-vault.yaml` |
+| Provider | Auth method | Manifest | Official docs |
+|---|---|---|---|
+| AWS Secrets Manager | IRSA via STS (JWT) | `manifests/secretstore/*-aws.yaml` | [ESO AWS provider](https://external-secrets.io/v0.10.0/provider/aws-secrets-manager/) · [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) · [IAM roles for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) |
+| Azure Key Vault | Workload Identity | `manifests/secretstore/*-azure.yaml` | [ESO Azure KV provider](https://external-secrets.io/v0.10.0/provider/azure-key-vault/) · [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) · [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview) |
+| HashiCorp Vault | Kubernetes auth | `manifests/secretstore/*-vault.yaml` | [ESO Vault provider](https://external-secrets.io/v0.10.0/provider/hashicorp-vault/) · [Vault Kubernetes auth](https://developer.hashicorp.com/vault/docs/auth/kubernetes) · [KV secrets engine v2](https://developer.hashicorp.com/vault/docs/secrets/kv/kv-v2) |
 
 Each provider has prod and dev variants. Apply **one** SecretStore per namespace — never share across environments.
+
+OpenShift on AWS (ROSA): see [Assuming an AWS IAM role for a service account](https://docs.openshift.com/rosa/authentication/assuming-an-aws-iam-role-for-a-service-account.html) for OIDC/STS setup that pairs with the AWS SecretStore manifests.
 
 ## Prerequisites
 
 - OpenShift 4.12+ or Kubernetes 1.26+
 - Helm 3.x
 - Cluster-admin access to install ESO and configure RBAC
-- A central secrets manager account with a test secret at `dev/registry/pull-secret`
+- A central secrets manager account **or** use the fake provider manifests in `manifests/lab/` for demo clusters
 - `oc` or `kubectl` CLI
+
+> Manifests use `external-secrets.io/v1beta1` — compatible with ESO 0.10.x pinned in `manifests/operator/eso-install-values.yaml`.
 
 ## Quick Start
 
@@ -102,6 +106,25 @@ For the full guided exercise, start with [LAB.md](LAB.md).
 | `vault/prod-secrets-policy.hcl` | Minimal Vault policy — no wildcards |
 
 All manifests contain `# AUTHOR TO VALIDATE` comments for environment-specific values. Replace placeholders before applying to production.
+
+## Validate Locally
+
+No cluster required:
+
+```bash
+chmod +x scripts/validate-local.sh
+./scripts/validate-local.sh
+```
+
+With a logged-in `oc` or `kubectl` session:
+
+```bash
+./scripts/validate-local.sh --with-cluster
+```
+
+The script uses Ruby (built into macOS) for YAML parsing and downloads kubeconform to `.cache/` if not installed.
+
+Cluster walkthrough on OpenShift without AWS/Azure/Vault: use the fake provider path in `lab/03` and `manifests/lab/`.
 
 ## Lab Exercise
 

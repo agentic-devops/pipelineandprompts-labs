@@ -1,23 +1,53 @@
 # Step 1 — Expose the Gap
 
 **Time:** ~20 minutes  
-**Goal:** Prove that without RBAC, any service account in a namespace can read and decode every secret.
+**Goal:** Prove that without scoped RBAC, service accounts in a namespace can read and decode secrets.
 
 This is the failure mode that audits find immediately. You need to see it to believe it.
 
 ## Why This Step Exists
 
-Kubernetes Secrets are base64 encoded — not encrypted. OpenShift 4.x enables etcd encryption at rest by default, but that does not prevent a pod's service account from reading secrets via the API. Without explicit RBAC, the default service account in a namespace can `get` and `list` all secrets.
+Kubernetes Secrets are base64 encoded — not encrypted. OpenShift 4.x enables etcd encryption at rest by default, but that does not prevent a pod's service account from reading secrets via the API. Without explicit RBAC scoped to named secrets, any service account with broad `get`/`list` on secrets can retrieve every credential in the namespace.
 
-## Setup — Deploy a Probe Pod
+## OpenShift Note
 
-Create a service account with **no** secret-reading Role bound to it:
+OpenShift ships with restrictive default RBAC — a new service account **cannot** read secrets until granted permission. To demonstrate the gap this lab is about, Step 1a creates a deliberately permissive Role that simulates ad-hoc environments where secrets were created without scoped access controls.
+
+## Step 1a — Simulate Permissive Access (OpenShift / hardened clusters)
 
 ```bash
 oc create serviceaccount probe-sa -n dev
+
+cat <<'EOF' | oc apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: lab-permissive-secret-reader
+  namespace: dev
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: lab-permissive-probe-binding
+  namespace: dev
+subjects:
+  - kind: ServiceAccount
+    name: probe-sa
+    namespace: dev
+roleRef:
+  kind: Role
+  name: lab-permissive-secret-reader
+  apiGroup: rbac.authorization.k8s.io
+EOF
 ```
 
-Deploy a pod that uses this service account and attempts to read the pull secret:
+> Remove this permissive binding in Step 5 when you apply scoped RBAC.
+
+## Setup — Deploy a Probe Pod
 
 ```bash
 cat <<'EOF' | oc apply -f -
@@ -31,39 +61,39 @@ metadata:
 spec:
   serviceAccountName: probe-sa
   restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
     - name: probe
       image: registry.redhat.io/ubi9/ubi-minimal:latest
       command: ["sleep", "300"]
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+        runAsNonRoot: true
 EOF
+
+oc wait --for=condition=Ready pod/secret-probe -n dev --timeout=120s
 ```
 
-Wait for the pod to be running:
+## Attempt 1 — Check RBAC with oc auth can-i
+
+`oc auth can-i` returns `no` with exit code 1 — that is expected when access is denied.
 
 ```bash
-oc wait --for=condition=Ready pod/secret-probe -n dev --timeout=60s
+echo -n "probe-sa can get registry-pull-secret: "
+oc auth can-i get secret/registry-pull-secret \
+  --as=system:serviceaccount:dev:probe-sa -n dev || true
+
+echo -n "probe-sa can list all secrets: "
+oc auth can-i list secrets \
+  --as=system:serviceaccount:dev:probe-sa -n dev || true
 ```
 
-## Attempt 1 — Read the Secret via API
-
-Exec into the probe pod and use the mounted service account token to query the Kubernetes API:
-
-```bash
-oc exec -it secret-probe -n dev -- sh -c '
-  TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-  NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-  CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-  APISERVER=https://kubernetes.default.svc
-
-  curl -s --cacert $CACERT \
-    -H "Authorization: Bearer $TOKEN" \
-    "$APISERVER/api/v1/namespaces/$NAMESPACE/secrets/registry-pull-secret"
-'
-```
-
-**Expected result without RBAC:** HTTP 200 with the full secret object, including base64-encoded `.dockerconfigjson`.
-
-If you get a 403 Forbidden, your cluster may have a restrictive default RBAC policy (common on hardened OpenShift). Skip to the oc CLI demonstration below — the principle is the same.
+**Expected with permissive Role (Step 1a):** both return `yes`.
 
 ## Attempt 2 — Decode the Credential
 
@@ -78,51 +108,40 @@ You will see plaintext username and password. This is what any service account w
 ## Attempt 3 — List ALL Secrets in the Namespace
 
 ```bash
-oc exec -it secret-probe -n dev -- sh -c '
-  TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-  NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-  CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+echo -n "probe-sa can list secrets: "
+oc auth can-i list secrets \
+  --as=system:serviceaccount:dev:probe-sa -n dev || true
 
-  curl -s --cacert $CACERT \
-    -H "Authorization: Bearer $TOKEN" \
-    "$APISERVER/api/v1/namespaces/$NAMESPACE/secrets" \
-    | jq ".items[].metadata.name"
-'
+# Show secret names visible to your own credentials
+oc get secrets -n dev -o name
 ```
 
-Without RBAC, this lists every secret name in the namespace — database passwords, API tokens, TLS certs.
+Without scoped RBAC, the permissive Role grants access to every secret in the namespace — database passwords, API tokens, TLS certs.
 
 ## What You Should Observe
 
-| Check | Without RBAC | With RBAC (Step 5) |
+| Check | Permissive RBAC (Step 1) | Scoped RBAC (Step 5) |
 |---|---|---|
-| Probe SA can `get` registry-pull-secret | Yes | No (403) |
-| Probe SA can `list` all secrets | Yes | No (403) |
-| Workload SA can `get` registry-pull-secret | Yes (default) | Yes (scoped Role) |
-| Workload SA can `get` other secrets | Yes | No |
+| Probe SA can `get` registry-pull-secret | yes | no |
+| Probe SA can `list` all secrets | yes | no |
+| Workload SA can `get` registry-pull-secret | no (not bound yet) | yes (scoped Role) |
+| Workload SA can `get` other secrets | no | no |
 
 ## The Cross-Namespace Risk
 
-Repeat the list command but target the `prod` namespace (if it exists):
-
 ```bash
-oc exec -it secret-probe -n dev -- sh -c '
-  TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-  CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
-  curl -s -o /dev/null -w "%{http_code}" --cacert $CACERT \
-    -H "Authorization: Bearer $TOKEN" \
-    "https://kubernetes.default.svc/api/v1/namespaces/prod/secrets"
-'
+echo -n "probe-sa can list prod secrets: "
+oc auth can-i list secrets \
+  --as=system:serviceaccount:dev:probe-sa -n prod || true
 ```
 
-A `200` means dev workloads can read prod secrets. Namespace labels alone do not enforce isolation — RBAC does.
+A `yes` means dev workloads can read prod secrets. Namespace labels alone do not enforce isolation — RBAC does.
 
 ## Cleanup (keep the secret for later steps)
 
 ```bash
 oc delete pod secret-probe -n dev
-oc delete serviceaccount probe-sa -n dev
+# Keep probe-sa and permissive binding until Step 5
 ```
 
 Keep `registry-pull-secret` in dev — you'll replace it with ESO in Step 4.

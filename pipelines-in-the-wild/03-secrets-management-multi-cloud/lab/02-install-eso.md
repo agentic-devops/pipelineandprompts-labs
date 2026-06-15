@@ -3,6 +3,11 @@
 **Time:** ~15 minutes  
 **Goal:** Install ESO via Helm and verify all operator pods are healthy.
 
+Official references:
+- [ESO getting started](https://external-secrets.io/v0.10.0/introduction/getting-started/)
+- [ESO Helm installation](https://external-secrets.io/v0.10.0/introduction/getting-started/#installing-with-helm)
+- [External Secrets Operator GitHub](https://github.com/external-secrets/external-secrets)
+
 ## Install
 
 ```bash

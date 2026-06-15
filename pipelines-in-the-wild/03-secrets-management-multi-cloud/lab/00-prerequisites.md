@@ -34,11 +34,15 @@ Choose one provider and confirm access:
 - Cluster OIDC provider configured for IRSA
 - Secret created at path matching `dev/registry/pull-secret` with fields: `host`, `username`, `password`
 
+Docs: [ESO AWS provider](https://external-secrets.io/v0.10.0/provider/aws-secrets-manager/) · [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) · [IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+
 ### Azure Key Vault
 
 - Key Vault with a secret at matching path
 - Managed identity with `Key Vault Secrets User` role on the vault
 - Workload Identity configured on the cluster
+
+Docs: [ESO Azure provider](https://external-secrets.io/v0.10.0/provider/azure-key-vault/) · [Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) · [Workload Identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview)
 
 ### HashiCorp Vault
 
@@ -46,6 +50,8 @@ Choose one provider and confirm access:
 - `vault` CLI authenticated
 - KV v2 secrets engine enabled at `secret/`
 - Secret at `secret/data/dev/registry/pull-secret`
+
+Docs: [ESO Vault provider](https://external-secrets.io/v0.10.0/provider/hashicorp-vault/) · [Kubernetes auth](https://developer.hashicorp.com/vault/docs/auth/kubernetes) · [KV v2](https://developer.hashicorp.com/vault/docs/secrets/kv/kv-v2)
 
 ## Lab Namespace
 

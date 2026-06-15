@@ -21,18 +21,19 @@ jobs:
 
       - name: Validate Kubernetes manifests
         run: |
+          mapfile -t MANIFESTS < <(find manifests -name '*.yaml' ! -path 'manifests/operator/*' | sort)
           kubeconform \
             -strict \
             -ignore-missing-schemas \
             -schema-location default \
             -schema-location \
               'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-            manifests/**/*.yaml
+            "${MANIFESTS[@]}"
 
       - name: Check for placeholder values
         run: |
-          # Fail if any AUTHOR TO VALIDATE placeholders remain uncommented
-          if grep -r "AUTHOR TO VALIDATE" manifests/ --include="*.yaml" | grep -v "^#"; then
+          if grep -r "AUTHOR TO VALIDATE" manifests/ --include="*.yaml" \
+            | grep -vE '#.*AUTHOR TO VALIDATE'; then
             echo "Unresolved AUTHOR TO VALIDATE placeholders found in manifests"
             exit 1
           fi

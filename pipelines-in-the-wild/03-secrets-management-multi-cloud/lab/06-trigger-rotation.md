@@ -41,10 +41,19 @@ spec:
       serviceAccountName: dev-workload-sa
       imagePullSecrets:
         - name: registry-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: app
           image: registry.redhat.io/ubi9/ubi-minimal:latest
           command: ["sleep", "infinity"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
 EOF
 
 oc rollout status deployment/registry-consumer -n dev
@@ -80,9 +89,19 @@ oc get externalsecret registry-pull-secret -n dev \
 
 ## Step 2 — Rotate in the Central Store
 
-Rotate using your provider. Examples:
+### Fake provider (lab path)
+
+The fake SecretStore ships with `v1` and `v2` credential versions. Patch the ExternalSecret to `v2`:
+
+```bash
+oc patch externalsecret registry-pull-secret -n dev --type=json -p='[
+  {"op":"replace","path":"/spec/dataFrom/0/extract/version","value":"v2"}
+]'
+```
 
 ### AWS Secrets Manager
+
+Docs: [Rotate a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html)
 
 ```bash
 aws secretsmanager update-secret \
@@ -92,6 +111,8 @@ aws secretsmanager update-secret \
 
 ### Azure Key Vault
 
+Docs: [Add a secret version](https://learn.microsoft.com/en-us/azure/key-vault/secrets/about-secrets#secret-versions)
+
 ```bash
 az keyvault secret set \
   --vault-name YOUR-KEYVAULT-NAME \
@@ -100,6 +121,8 @@ az keyvault secret set \
 ```
 
 ### HashiCorp Vault
+
+Docs: [KV v2 — update version](https://developer.hashicorp.com/vault/docs/secrets/kv/kv-v2#versioned-kv-secrets-engine)
 
 ```bash
 vault kv put secret/dev/registry/pull-secret \

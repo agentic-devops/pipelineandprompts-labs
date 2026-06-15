@@ -5,11 +5,29 @@
 
 ## Remove the Manual Secret
 
+Delete both the manual secret and any previous ExternalSecret to avoid owner conflicts:
+
 ```bash
-oc delete secret registry-pull-secret -n dev
+oc delete externalsecret registry-pull-secret -n dev --ignore-not-found
+oc delete secret registry-pull-secret -n dev --ignore-not-found
+```
+
+Wait a moment for deletion to complete:
+
+```bash
+sleep 2
+oc get secret registry-pull-secret -n dev 2>&1 || true
 ```
 
 ## Apply ExternalSecret
+
+**Fake provider (lab path):**
+
+```bash
+oc apply -f manifests/lab/dev-pull-secret-fake.yaml
+```
+
+**AWS / Azure / Vault:**
 
 Update `manifests/externalsecret/dev-pull-secret-external.yaml` with your provider's remote secret path and field names, then:
 
@@ -38,7 +56,7 @@ oc get secret registry-pull-secret -n dev -o jsonpath='{.type}'
 # Expected: kubernetes.io/dockerconfigjson
 ```
 
-Decode and verify structure (not production values in a shared terminal):
+Verify structure without printing credential values:
 
 ```bash
 oc get secret registry-pull-secret -n dev \
@@ -57,9 +75,11 @@ Common failures:
 
 | Error | Cause | Fix |
 |---|---|---|
-| `SecretSyncedError` | Wrong remote path or field name | Check `remoteRef.key` and `property` values |
+| `SecretSyncedError` — wrong path/field | `remoteRef.key` or `property` mismatch | Check provider secret path and field names |
+| `SecretSyncedError` — already exists | Manual secret not fully deleted before apply | Delete both ExternalSecret and Secret, wait, re-apply |
 | Auth failure | SA annotation missing or wrong | Verify IAM/MI/Vault role binding |
 | SecretStore not ready | Provider unreachable | Check network policies and vault URL |
+| `no matches for kind SecretStore in version v1` | API version mismatch | Use `external-secrets.io/v1beta1` with ESO 0.10.x |
 
 ## Next
 

@@ -19,11 +19,12 @@ Work through these in order. Each step builds on the previous one. The sequence 
 
 ## Provider Selection
 
-Pick one provider for the lab. All three are supported:
+Pick one provider for the lab. All three production providers are supported, plus a fake provider for demo clusters:
 
-- **AWS Secrets Manager** — `manifests/secretstore/*-secretstore-aws.yaml`
-- **Azure Key Vault** — `manifests/secretstore/*-secretstore-azure.yaml`
-- **HashiCorp Vault** — `manifests/secretstore/*-secretstore-vault.yaml` + `vault/kubernetes-auth-setup.sh`
+- **Fake provider (lab/demo)** — `manifests/lab/dev-secretstore-fake.yaml` — no external dependencies · [ESO fake provider](https://external-secrets.io/v0.10.0/provider/fake/)
+- **AWS Secrets Manager** — `manifests/secretstore/*-secretstore-aws.yaml` · [ESO docs](https://external-secrets.io/v0.10.0/provider/aws-secrets-manager/) · [AWS docs](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)
+- **Azure Key Vault** — `manifests/secretstore/*-secretstore-azure.yaml` · [ESO docs](https://external-secrets.io/v0.10.0/provider/azure-key-vault/) · [Azure docs](https://learn.microsoft.com/en-us/azure/key-vault/general/overview)
+- **HashiCorp Vault** — `manifests/secretstore/*-secretstore-vault.yaml` + `vault/kubernetes-auth-setup.sh` · [ESO docs](https://external-secrets.io/v0.10.0/provider/hashicorp-vault/) · [Vault Kubernetes auth](https://developer.hashicorp.com/vault/docs/auth/kubernetes)
 
 ## Cleanup
 
