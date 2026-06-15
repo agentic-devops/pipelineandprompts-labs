@@ -1,0 +1,33 @@
+# Helm values for External Secrets Operator
+# Install:
+#   helm repo add external-secrets https://charts.external-secrets.io
+#   helm repo update
+#   helm install external-secrets external-secrets/external-secrets \
+#     --namespace external-secrets --create-namespace \
+#     -f manifests/operator/eso-install-values.yaml
+#
+# AUTHOR TO VALIDATE — confirm latest stable chart version before production use
+
+installCRDs: true
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+serviceMonitor:
+  enabled: false
+
+webhook:
+  create: true
+
+certController:
+  create: true
+
+# Pin chart version at install time:
+#   --version 0.10.0

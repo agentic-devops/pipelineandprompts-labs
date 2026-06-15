@@ -6,7 +6,7 @@ Hands-on code examples from the [Pipelines in the Wild](https://pipelineandpromp
 
 1. [Zero-Downtime Deployments on OpenShift](01-zero-downtime-deployments/) - Blue/green deployments with gradual traffic shifting on ROSA HCP
 2. [Retry Logic & Tiered Alerting](02-retry-logic-tiered-alerting/) - Self-healing pipelines with intelligent retry and alert escalation
-3. [Secrets Management in Multi-Cloud Pipelines](03-secrets-management/) - (Coming soon) Secure secrets handling across GitHub Actions, AWS, and OpenShift
+3. [Secrets Management in Multi-Cloud Pipelines](03-secrets-management-multi-cloud/) - External Secrets Operator manifests, RBAC templates, and rotation runbook for AWS, Azure, and Vault
 
 ## Prerequisites
 
