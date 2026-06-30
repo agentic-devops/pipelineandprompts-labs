@@ -1,0 +1,87 @@
+name: Managed OpenShift Terraform Drift Detection
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  detect-drift:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [rosa-production, aro-production, osd-production]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.7"
+
+      - name: Configure AWS credentials (ROSA)
+        if: matrix.environment == 'rosa-production'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Use a read-only role for drift detection — separate from the apply role
+          # The plan role needs: s3:GetObject, s3:ListBucket, dynamodb:GetItem
+          # plus read permissions on the managed OpenShift resources being planned
+          role-to-assume: ${{ secrets.AWS_PLAN_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Configure Azure credentials (ARO)
+        if: matrix.environment == 'aro-production'
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure GCP credentials (OSD)
+        if: matrix.environment == 'osd-production'
+        uses: google-github-actions/auth@v2
+        with:
+          # Prefer Workload Identity Federation over JSON key in governed environments
+          # JSON key shown here for clarity — replace with workload_identity_provider
+          # if your GCP org policy blocks long-lived service account keys
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Terraform init
+        working-directory: environments/${{ matrix.environment }}
+        run: terraform init
+
+      - name: Terraform plan — detect drift
+        id: plan
+        working-directory: environments/${{ matrix.environment }}
+        run: |
+          set +e
+          terraform plan \
+            -detailed-exitcode \
+            -out=plan.tfplan \
+            -no-color 2>&1 | tee plan.txt
+          TF_EXIT=${PIPESTATUS[0]}
+          echo "exitcode=${TF_EXIT}" >> $GITHUB_OUTPUT
+          exit ${TF_EXIT}
+
+      - name: Alert on drift detected
+        if: steps.plan.outputs.exitcode == '2'
+        run: |
+          pip install requests -q
+          python scripts/alert.py \
+            "DRIFT DETECTED in ${{ matrix.environment }} — review plan output"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Upload plan for review
+        if: steps.plan.outputs.exitcode == '2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-plan-${{ matrix.environment }}
+          path: environments/${{ matrix.environment }}/plan.txt
+          retention-days: 7
+
+      - name: Fail if drift detected
+        if: steps.plan.outputs.exitcode == '2'
+        run: |
+          echo "Drift detected in ${{ matrix.environment }}"
+          echo "Review the uploaded plan artifact and remediate before next apply"
+          exit 1

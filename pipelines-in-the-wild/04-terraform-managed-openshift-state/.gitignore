@@ -1,0 +1,22 @@
+# Terraform
+.terraform/
+.cache/
+*.tfstate
+*.tfstate.*
+*.tfplan
+plan.txt
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Credentials
+*.pem
+*.key
+credentials.json
+.terraform.tfvars
+*.auto.tfvars
