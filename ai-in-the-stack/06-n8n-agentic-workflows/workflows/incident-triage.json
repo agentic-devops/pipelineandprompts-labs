@@ -1,0 +1,344 @@
+{
+  "name": "Incident Triage — RAG + MCP + Vertex AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "incident-triage",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Alert Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        260
+      ],
+      "webhookId": "incident-triage"
+    },
+    {
+      "parameters": {
+        "jsCode": "const alert = $input.first().json.alerts[0];\n\nreturn {\n  json: {\n    alertname: alert.labels.alertname,\n    severity: alert.labels.severity,\n    namespace: alert.labels.namespace,\n    service: alert.labels.service || alert.labels.deployment || \"unknown\",\n    status: alert.status,\n    description: alert.annotations.description || alert.annotations.summary,\n    startsAt: alert.startsAt\n  }\n};"
+      },
+      "id": "parse-alert",
+      "name": "Parse Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mock-rag-service:8080/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"question\": \"How do I troubleshoot \" + $json.alertname + \" for \" + $json.service + \"? \" + $json.description } }}",
+        "options": {
+          "retry": {
+            "retryOnFail": true,
+            "maxTries": 3,
+            "waitBetweenTries": 2000
+          }
+        }
+      },
+      "id": "rag-query",
+      "name": "RAG Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://mock-mcp-server:8080/sse",
+        "tools": "get_failing_pods,get_events",
+        "toolParameters": "={{ { \"namespace\": $json.namespace } }}"
+      },
+      "id": "mcp-query",
+      "name": "MCP Query",
+      "type": "n8n-nodes-base.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        320,
+        380
+      ],
+      "notes": "MCP client node naming/parameters vary by n8n version — check your installed version's MCP Client node for exact field names. Connects over SSE to a real MCP server (mock or openshift-mcp-sre-tools)."
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex"
+      },
+      "id": "merge-rag-mcp",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        560,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Alert: {{ $('Parse Alert').item.json.alertname }} on {{ $('Parse Alert').item.json.service }} ({{ $('Parse Alert').item.json.namespace }}).\nRunbook guidance: {{ $('RAG Query').item.json.answer }}\nCluster diagnostics: {{ JSON.stringify($('MCP Query').item.json) }}\n\nSummarize whether this alert is already self-resolved and what the on-call engineer should do next."
+      },
+      "id": "analyze-vertex",
+      "name": "Analyze (Vertex AI)",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        800,
+        260
+      ],
+      "notes": "Attach a Vertex AI Chat Model credential per the article's Step 2. For local testing without GCP, swap for any chat model node you have credentials for (OpenAI, Anthropic, Ollama)."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('MCP Query').item.json.failing_pods.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-resolved",
+      "name": "Already Resolved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    text: `:white_check_mark: *${$('Parse Alert').item.json.alertname}* on ${$('Parse Alert').item.json.service} looks auto-resolved — no failing pods on last check.`\n  }\n};"
+      },
+      "id": "format-light",
+      "name": "Format Light Notify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ragAnswer = $('RAG Query').first().json.answer;\nconst ragSources = $('RAG Query').first().json.sources.join(', ');\nconst clusterCheck = $('MCP Query').first().json;\n\nconst failingPodsText = clusterCheck.failing_pods.length > 0\n  ? clusterCheck.failing_pods.map(p => `\u2022 ${p.name} (${p.phase})`).join('\\n')\n  : 'None currently failing';\n\nreturn {\n  json: {\n    text: `*${$('Parse Alert').item.json.alertname}* \u2014 ${$('Parse Alert').item.json.service} (${$('Parse Alert').item.json.namespace})\\n\\n` +\n          `*Runbook guidance:*\\n${ragAnswer}\\n_Source: ${ragSources}_\\n\\n` +\n          `*Current cluster state:*\\n${failingPodsText}\\n\\n` +\n          `*Recent events:* ${clusterCheck.recent_events.length} events in last check\\n\\n` +\n          `*Analysis:* ${$('Analyze (Vertex AI)').item.json.text || $('Analyze (Vertex AI)').item.json.output}`\n  }\n};"
+      },
+      "id": "format-full",
+      "name": "Format Full Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": "={{ $env.SLACK_CHANNEL_ID }}",
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "id": "slack-light",
+      "name": "Slack Light Notify",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1520,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": "={{ $env.SLACK_CHANNEL_ID }}",
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "id": "slack-full",
+      "name": "Slack Post",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1520,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    timestamp: new Date().toISOString(),\n    alertname: $('Parse Alert').item.json.alertname,\n    namespace: $('Parse Alert').item.json.namespace,\n    auto_resolved: $('MCP Query').item.json.failing_pods.length === 0,\n    workflow_execution_id: $execution.id\n  }\n};"
+      },
+      "id": "log-execution",
+      "name": "Log Execution",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Alert Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Alert": {
+      "main": [
+        [
+          {
+            "node": "RAG Query",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MCP Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Query": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Query": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Analyze (Vertex AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze (Vertex AI)": {
+      "main": [
+        [
+          {
+            "node": "Already Resolved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Resolved?": {
+      "main": [
+        [
+          {
+            "node": "Format Light Notify",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Full Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Light Notify": {
+      "main": [
+        [
+          {
+            "node": "Slack Light Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Full Alert": {
+      "main": [
+        [
+          {
+            "node": "Slack Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Light Notify": {
+      "main": [
+        [
+          {
+            "node": "Log Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Post": {
+      "main": [
+        [
+          {
+            "node": "Log Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionTimeout": 300,
+    "errorWorkflow": "error-workflow"
+  },
+  "pinData": {}
+}

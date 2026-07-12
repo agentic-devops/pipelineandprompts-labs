@@ -1,0 +1,71 @@
+{
+  "name": "error-workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const exec = $json.execution;\nconst wf = $json.workflow;\n\nreturn {\n  json: {\n    text: `:rotating_light: *Workflow failed*\\n*Workflow:* ${wf.name}\\n*Execution ID:* ${exec.id}\\n*Error:* ${exec.error ? exec.error.message : 'unknown error'}\\n*Time:* ${new Date().toISOString()}`\n  }\n};"
+      },
+      "id": "format-error",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        140,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": "={{ $env.SLACK_ERROR_CHANNEL_ID }}",
+        "text": "={{ $json.text }}",
+        "otherOptions": {}
+      },
+      "id": "slack-error",
+      "name": "Post to #automation-errors",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        380,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error": {
+      "main": [
+        [
+          {
+            "node": "Post to #automation-errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "pinData": {}
+}

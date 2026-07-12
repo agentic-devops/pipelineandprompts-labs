@@ -1,0 +1,17 @@
+{
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "PodCrashLooping",
+        "severity": "warning",
+        "namespace": "production",
+        "service": "payment-api"
+      },
+      "annotations": {
+        "description": "Pod payment-api-7d4b8c6f5-x2k9m has restarted 5 times in 10 minutes"
+      },
+      "startsAt": "2026-07-20T14:32:00Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+# Production target for wiring a real Alertmanager to this workflow.
+# NOTE: this block was written to match n8n's webhook contract but was
+# not tested against a live Alertmanager in the original POC — validate
+# it against your own Alertmanager version before relying on it.
+
+receivers:
+  - name: n8n-platform-automation
+    webhook_configs:
+      - url: 'https://your-n8n-instance/webhook/incident-triage'
+        send_resolved: true
+        # Alertmanager supports basic auth on webhook configs — enable it
+        # so arbitrary POST requests can't trigger this automation.
+        # http_config:
+        #   basic_auth:
+        #     username: alertmanager
+        #     password_file: /etc/alertmanager/webhook-password
