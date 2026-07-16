@@ -15,21 +15,21 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
-      - mock-rag-service
-      - mock-mcp-server
+      - demo-rag-service
+      - demo-mcp-server
 
-  mock-rag-service:
-    build: ./mock-services/mock-rag-service
-    container_name: mock-rag-service
+  demo-rag-service:
+    build: ./demo-services/demo-rag-service
+    container_name: demo-rag-service
     restart: unless-stopped
     expose:
       - "8080"
     ports:
       - "8081:8080"
 
-  mock-mcp-server:
-    build: ./mock-services/mock-mcp-server
-    container_name: mock-mcp-server
+  demo-mcp-server:
+    build: ./demo-services/demo-mcp-server
+    container_name: demo-mcp-server
     restart: unless-stopped
     expose:
       - "8080"

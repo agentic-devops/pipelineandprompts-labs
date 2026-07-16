@@ -2,9 +2,9 @@
 
 Companion repo for **AI in the Stack #6: Building n8n Workflows for Platform Engineering Automation**.
 
-This repo lets you run the full incident-triage workflow from the article on your own machine — webhook trigger → parallel RAG + MCP lookups → LLM analysis → conditional Slack notification — using lightweight mock services, so you don't need a live OpenShift cluster or GCP project just to see the shape of the thing work.
+This repo lets you run the full incident-triage workflow from the article on your own machine — webhook trigger → parallel RAG + MCP lookups → LLM analysis → conditional Slack notification — using lightweight demo services, so you don't need a live OpenShift cluster or GCP project just to see the shape of the thing work.
 
-Once the demo runs end-to-end, swap the mock RAG and MCP services for the real ones (Article 02's RAG pipeline and [openshift-mcp-sre-tools](https://github.com/nedoshi/openshift-mcp-sre-tools)) and point the LLM node at Vertex AI, exactly as described in the article.
+Once the demo runs end-to-end, swap the demo RAG and MCP services for the real ones (Article 02's RAG pipeline and [openshift-mcp-sre-tools](https://github.com/nedoshi/openshift-mcp-sre-tools)) and point the LLM node at Vertex AI, exactly as described in the article.
 
 ## What's in here
 
@@ -12,16 +12,16 @@ Once the demo runs end-to-end, swap the mock RAG and MCP services for the real o
 n8n-agentic-workflows/
 ├── workflows/
 │   └── incident-triage.json      # importable n8n workflow
-├── mock-services/
-│   ├── mock-rag-service/         # stands in for Article 02's RAG pipeline
-│   └── mock-mcp-server/          # stands in for openshift-mcp-sre-tools, real MCP-over-SSE
+├── demo-services/
+│   ├── demo-rag-service/         # stands in for Article 02's RAG pipeline
+│   └── demo-mcp-server/          # stands in for openshift-mcp-sre-tools, real MCP-over-SSE
 ├── samples/
 │   ├── sample-alert.json         # Alertmanager-shaped payload
 │   └── trigger-workflow.sh       # curl script to fire the webhook
 ├── config/
 │   ├── alertmanager.yml.example  # production webhook_configs block (untested against live Alertmanager)
 │   └── error-workflow.json       # minimal n8n error workflow (posts to Slack on failure)
-├── docker-compose.yml            # n8n + both mock services
+├── docker-compose.yml            # n8n + both demo services
 └── .env.example
 ```
 
@@ -30,9 +30,9 @@ n8n-agentic-workflows/
 - Docker and Docker Compose
 - An n8n instance — the `docker-compose.yml` here spins one up for you, so a separate install isn't required
 - A Slack workspace with an incoming webhook or bot token (for the final notification step)
-- Optional, for the real (non-mock) path: a GCP project with Vertex AI enabled, and access to a real OpenShift/ROSA/ARO cluster running `openshift-mcp-sre-tools`
+- Optional, for the real (non-demo) path: a GCP project with Vertex AI enabled, and access to a real OpenShift/ROSA/ARO cluster running `openshift-mcp-sre-tools`
 
-## Quickstart (mock services, ~10 minutes)
+## Quickstart (demo services, ~10 minutes)
 
 1. **Clone and configure**
 
@@ -42,7 +42,7 @@ n8n-agentic-workflows/
    cp .env.example .env
    ```
 
-   Edit `.env` and set at minimum `SLACK_WEBHOOK_URL` (or bot token — see below). Everything else has a working default for the mock path.
+   Edit `.env` and set at minimum `SLACK_WEBHOOK_URL` (or bot token — see below). Everything else has a working default for the demo path.
 
 2. **Start everything**
 
@@ -52,8 +52,8 @@ n8n-agentic-workflows/
 
    This brings up three containers:
    - `n8n` — the workflow engine, at `http://localhost:5678`
-   - `mock-rag-service` — a canned runbook-answer API at `http://mock-rag-service:8080/query`
-   - `mock-mcp-server` — a real MCP server over SSE at `http://mock-mcp-server:8080/sse`, returning canned cluster diagnostics
+   - `demo-rag-service` — a canned runbook-answer API at `http://demo-rag-service:8080/query`
+   - `demo-mcp-server` — a real MCP server over SSE at `http://demo-mcp-server:8080/sse`, returning canned cluster diagnostics
 
 3. **Import the workflow**
 
@@ -63,7 +63,7 @@ n8n-agentic-workflows/
 
    The imported workflow references two credentials you'll need to create in n8n's **Credentials** panel:
    - **Slack** — incoming webhook or bot token, used by the `Slack Post` and `Slack Light Notify` nodes
-   - **Vertex AI (Google Cloud)** — used by the `Analyze (Vertex AI)` node. For the mock quickstart you can swap this node's credential for any chat model you already have configured in n8n (OpenAI, Anthropic, Ollama) — the node just needs *a* model to reason over the merged RAG + MCP output. See "Swapping the LLM provider" below.
+   - **Vertex AI (Google Cloud)** — used by the `Analyze (Vertex AI)` node. For the demo quickstart you can swap this node's credential for any chat model you already have configured in n8n (OpenAI, Anthropic, Ollama) — the node just needs *a* model to reason over the merged RAG + MCP output. See "Swapping the LLM provider" below.
 
    Open each node showing a red exclamation mark and select or create the credential.
 
@@ -75,20 +75,20 @@ n8n-agentic-workflows/
 
    This POSTs `samples/sample-alert.json` to the webhook. Watch the execution in n8n's UI — you'll see the RAG and MCP branches fire in parallel, merge into the analysis step, hit the conditional, and post to Slack.
 
-6. **Check Slack.** You should see a message combining the mock runbook guidance with the mock cluster diagnostics — the same payoff described in the article, just with canned data standing in for a live cluster.
+6. **Check Slack.** You should see a message combining the demo runbook guidance with the demo cluster diagnostics — the same payoff described in the article, just with canned data standing in for a live cluster.
 
 ## Swapping in the real services
 
-Once the mock path works, replace pieces one at a time:
+Once the demo path works, replace pieces one at a time:
 
-| Mock component | Real replacement | Where it's covered |
+| Demo component | Real replacement | Where it's covered |
 |---|---|---|
-| `mock-rag-service` | Article 02's RAG runbook pipeline | AI in the Stack #2 |
-| `mock-mcp-server` | [openshift-mcp-sre-tools](https://github.com/nedoshi/openshift-mcp-sre-tools) against a real ARO/ROSA/OSD cluster | AI in the Stack #3 |
+| `demo-rag-service` | Article 02's RAG runbook pipeline | AI in the Stack #2 |
+| `demo-mcp-server` | [openshift-mcp-sre-tools](https://github.com/nedoshi/openshift-mcp-sre-tools) against a real ARO/ROSA/OSD cluster | AI in the Stack #3 |
 | Chat model credential | Vertex AI via GCP service account | This article, Step 2 |
 | Manual `curl` trigger | Alertmanager webhook (see `config/alertmanager.yml.example`) | This article, Step 3 — **note: this block was not tested against a live Alertmanager** |
 
-Update the **MCP Client** node's URL from `http://mock-mcp-server:8080/sse` to your real MCP server's address, and the **RAG Query** HTTP Request node's URL from `http://mock-rag-service:8080/query` to your real RAG service.
+Update the **MCP Client** node's URL from `http://demo-mcp-server:8080/sse` to your real MCP server's address, and the **RAG Query** HTTP Request node's URL from `http://demo-rag-service:8080/query` to your real RAG service.
 
 ### Swapping the LLM provider
 
@@ -98,7 +98,7 @@ The `Analyze (Vertex AI)` node is a standard n8n AI chat model node. To use a di
 
 A second AI tool reviewed this repo and suggested several production-hardening additions. Three were in scope for a tutorial demo and are now built in:
 
-- **Tool schemas** — `mock-mcp-server/server.py`'s tools declare explicit, validated parameter schemas (`limit` bounded 1–100, `pod_name` required and non-empty, namespace pattern-checked). The MCP server rejects an out-of-range or missing parameter before the handler ever runs — try `get_events` with `limit: 500` and you'll get a validation error, not a silently clamped value. This is what "tool schemas prevent the agent from inventing parameters" looks like enforced, not just described.
+- **Tool schemas** — `demo-mcp-server/server.py`'s tools declare explicit, validated parameter schemas (`limit` bounded 1–100, `pod_name` required and non-empty, namespace pattern-checked). The MCP server rejects an out-of-range or missing parameter before the handler ever runs — try `get_events` with `limit: 500` and you'll get a validation error, not a silently clamped value. This is what "tool schemas prevent the agent from inventing parameters" looks like enforced, not just described.
 - **Parallel MCP calls** — the workflow no longer routes both MCP lookups through one combined node. `MCP Get Failing Pods` and `MCP Get Events` are separate nodes that both fire directly off `Parse Alert`, alongside `RAG Query` — three branches running concurrently instead of the agent calling tools one at a time. They rejoin at a 3-input `Merge` node before analysis.
 - **Per-node latency timing** — small `Mark * Latency` code nodes stamp `Date.now()` as each branch completes. `Log Execution` at the end computes how long the RAG query, each MCP call, and the LLM analysis step actually took, in milliseconds. n8n's canvas doesn't show per-node runtime by default, so this is what makes the "30-minute run" problem from the article actually measurable in your own executions instead of just visible in hindsight.
 
@@ -127,10 +127,10 @@ Full detail on all of the above is in the article itself.
 ## Troubleshooting
 
 - **Nodes show a red exclamation mark on import** — credentials don't transfer between n8n instances. Recreate them per step 4 above.
-- **MCP Get Failing Pods / MCP Get Events can't connect** — confirm `mock-mcp-server` is healthy: `docker compose logs mock-mcp-server`. The SSE endpoint is `http://mock-mcp-server:8080/sse` from inside the Docker network, not `localhost`.
-- **MCP node rejects a call with a validation error** — that's the tool schema working as intended, not a bug. Check the parameter against the bounds in `mock-mcp-server/server.py` (e.g. `limit` must be 1–100).
+- **MCP Get Failing Pods / MCP Get Events can't connect** — confirm `demo-mcp-server` is healthy: `docker compose logs demo-mcp-server`. The SSE endpoint is `http://demo-mcp-server:8080/sse` from inside the Docker network, not `localhost`.
+- **MCP node rejects a call with a validation error** — that's the tool schema working as intended, not a bug. Check the parameter against the bounds in `demo-mcp-server/server.py` (e.g. `limit` must be 1–100).
 - **Slack node fails** — double check `SLACK_WEBHOOK_URL` in `.env` and that `docker compose up -d` was re-run after editing it (`docker compose up -d --force-recreate n8n`).
-- **Workflow runs but never posts to Slack** — check the IF node's condition; the mock MCP server's canned "no failing pods" response may be routing you down the light-notify branch. Edit `mock-services/mock-mcp-server/server.py` to return a failing pod if you want to force the full-alert branch.
+- **Workflow runs but never posts to Slack** — check the IF node's condition; the demo MCP server's canned "no failing pods" response may be routing you down the light-notify branch. Edit `demo-services/demo-mcp-server/server.py` to return a failing pod if you want to force the full-alert branch.
 
 ## License
 

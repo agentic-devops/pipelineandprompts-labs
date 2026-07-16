@@ -1,5 +1,5 @@
 """
-Mock RAG service standing in for the Article 02 runbook retrieval pipeline.
+Demo RAG service standing in for the Article 02 runbook retrieval pipeline.
 
 Returns a canned runbook answer and source list for any question, so the
 n8n workflow's RAG Query node has something real to call over HTTP while
@@ -8,7 +8,7 @@ you're validating the workflow shape locally.
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI(title="mock-rag-service")
+app = FastAPI(title="demo-rag-service")
 
 
 class QueryRequest(BaseModel):

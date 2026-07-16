@@ -1,5 +1,5 @@
 """
-Mock MCP server standing in for openshift-mcp-sre-tools.
+Demo MCP server standing in for openshift-mcp-sre-tools.
 
 Implements the same four read-only tool names used in the article
 (get_cluster_health, get_failing_pods, get_events, diagnose_crashloop)
@@ -23,7 +23,7 @@ from typing import Annotated
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
-mcp = FastMCP("openshift-sre-diagnostics-mock", host="0.0.0.0", port=8080)
+mcp = FastMCP("openshift-sre-diagnostics-demo", host="0.0.0.0", port=8080)
 
 # Edit this to change which branch the demo workflow takes.
 FAILING_PODS = [
@@ -42,7 +42,7 @@ def get_cluster_health(
         str, Field(description="Cluster name to check", pattern=r"^[a-z0-9-]+$", default="default")
     ] = "default",
 ) -> dict:
-    """Return overall cluster health summary (mock data)."""
+    """Return overall cluster health summary (canned data)."""
     return {
         "cluster": cluster,
         "status": "degraded" if FAILING_PODS else "healthy",
@@ -56,7 +56,7 @@ def get_failing_pods(
         str, Field(description="Kubernetes namespace to inspect", pattern=r"^[a-z0-9-]+$", default="production")
     ] = "production",
 ) -> dict:
-    """Return pods currently failing or crash-looping in a namespace (mock data)."""
+    """Return pods currently failing or crash-looping in a namespace (canned data)."""
     return {
         "namespace": namespace,
         "failing_pods": FAILING_PODS,
@@ -73,7 +73,7 @@ def get_events(
         int, Field(description="Max events to return", ge=1, le=100, default=50)
     ] = 50,
 ) -> dict:
-    """Return recent Warning/Normal events for a namespace (mock data)."""
+    """Return recent Warning/Normal events for a namespace (canned data)."""
     events = RECENT_EVENTS if FAILING_PODS else []
     return {
         "namespace": namespace,
@@ -91,12 +91,12 @@ def diagnose_crashloop(
         str, Field(description="Kubernetes namespace to inspect", pattern=r"^[a-z0-9-]+$", default="production")
     ] = "production",
 ) -> dict:
-    """Return a canned crash-loop diagnosis for a given pod (mock data)."""
+    """Return a canned crash-loop diagnosis for a given pod (canned data)."""
     return {
         "pod_name": pod_name,
         "namespace": namespace,
         "likely_cause": "Readiness probe failing after container start — check startup dependency on downstream service.",
-        "confidence": "low (mock diagnostic — not a real analysis)",
+        "confidence": "low (demo diagnostic — not a real analysis)",
     }
 
 

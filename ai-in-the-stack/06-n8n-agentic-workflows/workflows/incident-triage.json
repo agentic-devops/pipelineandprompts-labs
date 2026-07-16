@@ -28,7 +28,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://mock-rag-service:8080/query",
+        "url": "http://demo-rag-service:8080/query",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ { \"question\": \"How do I troubleshoot \" + $json.alertname + \" for \" + $json.service + \"? \" + $json.description } }}",
@@ -58,7 +58,7 @@
     },
     {
       "parameters": {
-        "sseEndpoint": "http://mock-mcp-server:8080/sse",
+        "sseEndpoint": "http://demo-mcp-server:8080/sse",
         "tool": "get_failing_pods",
         "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace } }}"
       },
@@ -81,7 +81,7 @@
     },
     {
       "parameters": {
-        "sseEndpoint": "http://mock-mcp-server:8080/sse",
+        "sseEndpoint": "http://demo-mcp-server:8080/sse",
         "tool": "get_events",
         "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace, \"limit\": 25 } }}"
       },
@@ -90,7 +90,7 @@
       "type": "n8n-nodes-base.mcpClientTool",
       "typeVersion": 1,
       "position": [320, 500],
-      "notes": "Runs concurrently with MCP Get Failing Pods and RAG Query — all three branches fire off Parse Alert at once instead of the agent calling tools one at a time. limit is bounded 1-100 server-side; see mock-mcp-server/server.py."
+      "notes": "Runs concurrently with MCP Get Failing Pods and RAG Query — all three branches fire off Parse Alert at once instead of the agent calling tools one at a time. limit is bounded 1-100 server-side; see demo-mcp-server/server.py."
     },
     {
       "parameters": {
