@@ -12,24 +12,18 @@
       "name": "Alert Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [
-        -140,
-        260
-      ],
+      "position": [-140, 300],
       "webhookId": "incident-triage"
     },
     {
       "parameters": {
-        "jsCode": "const alert = $input.first().json.alerts[0];\n\nreturn {\n  json: {\n    alertname: alert.labels.alertname,\n    severity: alert.labels.severity,\n    namespace: alert.labels.namespace,\n    service: alert.labels.service || alert.labels.deployment || \"unknown\",\n    status: alert.status,\n    description: alert.annotations.description || alert.annotations.summary,\n    startsAt: alert.startsAt\n  }\n};"
+        "jsCode": "const alert = $input.first().json.alerts[0];\n\nreturn {\n  json: {\n    alertname: alert.labels.alertname,\n    severity: alert.labels.severity,\n    namespace: alert.labels.namespace,\n    service: alert.labels.service || alert.labels.deployment || \"unknown\",\n    status: alert.status,\n    description: alert.annotations.description || alert.annotations.summary,\n    startsAt: alert.startsAt,\n    t_parsed: Date.now()\n  }\n};"
       },
       "id": "parse-alert",
       "name": "Parse Alert",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        80,
-        260
-      ]
+      "position": [80, 300]
     },
     {
       "parameters": {
@@ -50,55 +44,98 @@
       "name": "RAG Query",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        320,
-        140
-      ]
+      "position": [320, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nitem.t_rag = Date.now();\nreturn { json: item };"
+      },
+      "id": "mark-rag-latency",
+      "name": "Mark RAG Latency",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 100]
     },
     {
       "parameters": {
         "sseEndpoint": "http://mock-mcp-server:8080/sse",
-        "tools": "get_failing_pods,get_events",
-        "toolParameters": "={{ { \"namespace\": $json.namespace } }}"
+        "tool": "get_failing_pods",
+        "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace } }}"
       },
-      "id": "mcp-query",
-      "name": "MCP Query",
+      "id": "mcp-failing-pods",
+      "name": "MCP Get Failing Pods",
       "type": "n8n-nodes-base.mcpClientTool",
       "typeVersion": 1,
-      "position": [
-        320,
-        380
-      ],
-      "notes": "MCP client node naming/parameters vary by n8n version — check your installed version's MCP Client node for exact field names. Connects over SSE to a real MCP server (mock or openshift-mcp-sre-tools)."
+      "position": [320, 300],
+      "notes": "Calls a single MCP tool directly, run in parallel with MCP Get Events rather than sequentially behind one combined node — this is the parallel-MCP-calls change. MCP client node field names vary by n8n version; verify against your installed version on import."
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nitem.t_pods = Date.now();\nreturn { json: item };"
+      },
+      "id": "mark-pods-latency",
+      "name": "Mark Failing Pods Latency",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://mock-mcp-server:8080/sse",
+        "tool": "get_events",
+        "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace, \"limit\": 25 } }}"
+      },
+      "id": "mcp-events",
+      "name": "MCP Get Events",
+      "type": "n8n-nodes-base.mcpClientTool",
+      "typeVersion": 1,
+      "position": [320, 500],
+      "notes": "Runs concurrently with MCP Get Failing Pods and RAG Query — all three branches fire off Parse Alert at once instead of the agent calling tools one at a time. limit is bounded 1-100 server-side; see mock-mcp-server/server.py."
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nitem.t_events = Date.now();\nreturn { json: item };"
+      },
+      "id": "mark-events-latency",
+      "name": "Mark Events Latency",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [560, 500]
     },
     {
       "parameters": {
         "mode": "combine",
-        "combinationMode": "multiplex"
+        "combinationMode": "multiplex",
+        "numberInputs": 3
       },
       "id": "merge-rag-mcp",
       "name": "Merge",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
-      "position": [
-        560,
-        260
-      ]
+      "position": [800, 300],
+      "notes": "3 inputs: RAG Query result, failing-pods result, events result — all merged after running in parallel."
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Alert: {{ $('Parse Alert').item.json.alertname }} on {{ $('Parse Alert').item.json.service }} ({{ $('Parse Alert').item.json.namespace }}).\nRunbook guidance: {{ $('RAG Query').item.json.answer }}\nCluster diagnostics: {{ JSON.stringify($('MCP Query').item.json) }}\n\nSummarize whether this alert is already self-resolved and what the on-call engineer should do next."
+        "text": "=Alert: {{ $('Parse Alert').item.json.alertname }} on {{ $('Parse Alert').item.json.service }} ({{ $('Parse Alert').item.json.namespace }}).\nRunbook guidance: {{ $('Mark RAG Latency').item.json.answer }}\nFailing pods: {{ JSON.stringify($('Mark Failing Pods Latency').item.json.failing_pods) }}\nRecent events: {{ JSON.stringify($('Mark Events Latency').item.json.recent_events) }}\n\nSummarize whether this alert is already self-resolved and what the on-call engineer should do next."
       },
       "id": "analyze-vertex",
       "name": "Analyze (Vertex AI)",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.4,
-      "position": [
-        800,
-        260
-      ],
+      "position": [1040, 300],
       "notes": "Attach a Vertex AI Chat Model credential per the article's Step 2. For local testing without GCP, swap for any chat model node you have credentials for (OpenAI, Anthropic, Ollama)."
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nitem.t_analyze = Date.now();\nreturn { json: item };"
+      },
+      "id": "mark-analyze-latency",
+      "name": "Mark Analyze Latency",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1280, 300]
     },
     {
       "parameters": {
@@ -109,7 +146,7 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $('MCP Query').item.json.failing_pods.length }}",
+              "leftValue": "={{ $('Mark Failing Pods Latency').item.json.failing_pods.length }}",
               "rightValue": 0,
               "operator": {
                 "type": "number",
@@ -124,10 +161,7 @@
       "name": "Already Resolved?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        1040,
-        260
-      ]
+      "position": [1520, 300]
     },
     {
       "parameters": {
@@ -137,23 +171,17 @@
       "name": "Format Light Notify",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1280,
-        140
-      ]
+      "position": [1760, 180]
     },
     {
       "parameters": {
-        "jsCode": "const ragAnswer = $('RAG Query').first().json.answer;\nconst ragSources = $('RAG Query').first().json.sources.join(', ');\nconst clusterCheck = $('MCP Query').first().json;\n\nconst failingPodsText = clusterCheck.failing_pods.length > 0\n  ? clusterCheck.failing_pods.map(p => `\u2022 ${p.name} (${p.phase})`).join('\\n')\n  : 'None currently failing';\n\nreturn {\n  json: {\n    text: `*${$('Parse Alert').item.json.alertname}* \u2014 ${$('Parse Alert').item.json.service} (${$('Parse Alert').item.json.namespace})\\n\\n` +\n          `*Runbook guidance:*\\n${ragAnswer}\\n_Source: ${ragSources}_\\n\\n` +\n          `*Current cluster state:*\\n${failingPodsText}\\n\\n` +\n          `*Recent events:* ${clusterCheck.recent_events.length} events in last check\\n\\n` +\n          `*Analysis:* ${$('Analyze (Vertex AI)').item.json.text || $('Analyze (Vertex AI)').item.json.output}`\n  }\n};"
+        "jsCode": "const ragAnswer = $('Mark RAG Latency').first().json.answer;\nconst ragSources = $('Mark RAG Latency').first().json.sources.join(', ');\nconst failingPods = $('Mark Failing Pods Latency').first().json.failing_pods;\nconst recentEvents = $('Mark Events Latency').first().json.recent_events;\n\nconst failingPodsText = failingPods.length > 0\n  ? failingPods.map(p => `\u2022 ${p.name} (${p.phase})`).join('\\n')\n  : 'None currently failing';\n\nreturn {\n  json: {\n    text: `*${$('Parse Alert').item.json.alertname}* \u2014 ${$('Parse Alert').item.json.service} (${$('Parse Alert').item.json.namespace})\\n\\n` +\n          `*Runbook guidance:*\\n${ragAnswer}\\n_Source: ${ragSources}_\\n\\n` +\n          `*Current cluster state:*\\n${failingPodsText}\\n\\n` +\n          `*Recent events:* ${recentEvents.length} events in last check\\n\\n` +\n          `*Analysis:* ${$('Analyze (Vertex AI)').item.json.text || $('Analyze (Vertex AI)').item.json.output}`\n  }\n};"
       },
       "id": "format-full",
       "name": "Format Full Alert",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1280,
-        380
-      ]
+      "position": [1760, 420]
     },
     {
       "parameters": {
@@ -166,10 +194,7 @@
       "name": "Slack Light Notify",
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
-      "position": [
-        1520,
-        140
-      ]
+      "position": [2000, 180]
     },
     {
       "parameters": {
@@ -182,158 +207,75 @@
       "name": "Slack Post",
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
-      "position": [
-        1520,
-        380
-      ]
+      "position": [2000, 420]
     },
     {
       "parameters": {
-        "jsCode": "return {\n  json: {\n    timestamp: new Date().toISOString(),\n    alertname: $('Parse Alert').item.json.alertname,\n    namespace: $('Parse Alert').item.json.namespace,\n    auto_resolved: $('MCP Query').item.json.failing_pods.length === 0,\n    workflow_execution_id: $execution.id\n  }\n};"
+        "jsCode": "const t_parsed = $('Parse Alert').item.json.t_parsed;\nconst t_rag = $('Mark RAG Latency').item.json.t_rag;\nconst t_pods = $('Mark Failing Pods Latency').item.json.t_pods;\nconst t_events = $('Mark Events Latency').item.json.t_events;\nconst t_analyze = $('Mark Analyze Latency').item.json.t_analyze;\nconst t_now = Date.now();\n\nreturn {\n  json: {\n    timestamp: new Date().toISOString(),\n    alertname: $('Parse Alert').item.json.alertname,\n    namespace: $('Parse Alert').item.json.namespace,\n    auto_resolved: $('Mark Failing Pods Latency').item.json.failing_pods.length === 0,\n    workflow_execution_id: $execution.id,\n    latency_ms: {\n      rag_query: t_rag - t_parsed,\n      mcp_failing_pods: t_pods - t_parsed,\n      mcp_events: t_events - t_parsed,\n      llm_analysis: t_analyze - Math.max(t_rag, t_pods, t_events),\n      total: t_now - t_parsed\n    }\n  }\n};"
       },
       "id": "log-execution",
       "name": "Log Execution",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1760,
-        260
-      ]
+      "position": [2240, 300],
+      "notes": "Per-node latency timing: each Mark *Latency node stamps Date.now() as it passes through, so this node can compute how long each stage actually took — visible in the execution data even though n8n's canvas doesn't show runtime duration per node."
     }
   ],
   "connections": {
     "Alert Webhook": {
-      "main": [
-        [
-          {
-            "node": "Parse Alert",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Parse Alert", "type": "main", "index": 0 }]]
     },
     "Parse Alert": {
-      "main": [
-        [
-          {
-            "node": "RAG Query",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "MCP Query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[
+        { "node": "RAG Query", "type": "main", "index": 0 },
+        { "node": "MCP Get Failing Pods", "type": "main", "index": 0 },
+        { "node": "MCP Get Events", "type": "main", "index": 0 }
+      ]]
     },
     "RAG Query": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Mark RAG Latency", "type": "main", "index": 0 }]]
     },
-    "MCP Query": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
+    "Mark RAG Latency": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 0 }]]
+    },
+    "MCP Get Failing Pods": {
+      "main": [[{ "node": "Mark Failing Pods Latency", "type": "main", "index": 0 }]]
+    },
+    "Mark Failing Pods Latency": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 1 }]]
+    },
+    "MCP Get Events": {
+      "main": [[{ "node": "Mark Events Latency", "type": "main", "index": 0 }]]
+    },
+    "Mark Events Latency": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 2 }]]
     },
     "Merge": {
-      "main": [
-        [
-          {
-            "node": "Analyze (Vertex AI)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Analyze (Vertex AI)", "type": "main", "index": 0 }]]
     },
     "Analyze (Vertex AI)": {
-      "main": [
-        [
-          {
-            "node": "Already Resolved?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Mark Analyze Latency", "type": "main", "index": 0 }]]
+    },
+    "Mark Analyze Latency": {
+      "main": [[{ "node": "Already Resolved?", "type": "main", "index": 0 }]]
     },
     "Already Resolved?": {
       "main": [
-        [
-          {
-            "node": "Format Light Notify",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Format Full Alert",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Format Light Notify", "type": "main", "index": 0 }],
+        [{ "node": "Format Full Alert", "type": "main", "index": 0 }]
       ]
     },
     "Format Light Notify": {
-      "main": [
-        [
-          {
-            "node": "Slack Light Notify",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Slack Light Notify", "type": "main", "index": 0 }]]
     },
     "Format Full Alert": {
-      "main": [
-        [
-          {
-            "node": "Slack Post",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Slack Post", "type": "main", "index": 0 }]]
     },
     "Slack Light Notify": {
-      "main": [
-        [
-          {
-            "node": "Log Execution",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Log Execution", "type": "main", "index": 0 }]]
     },
     "Slack Post": {
-      "main": [
-        [
-          {
-            "node": "Log Execution",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Log Execution", "type": "main", "index": 0 }]]
     }
   },
   "settings": {

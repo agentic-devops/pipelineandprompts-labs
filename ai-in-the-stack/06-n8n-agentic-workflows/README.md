@@ -94,6 +94,18 @@ Update the **MCP Client** node's URL from `http://mock-mcp-server:8080/sse` to y
 
 The `Analyze (Vertex AI)` node is a standard n8n AI chat model node. To use a different provider for local testing, delete it and drag in whichever chat model node matches credentials you already have (OpenAI, Anthropic, Ollama) — the rest of the workflow doesn't care which model produced the analysis, only that the node returns text. This mirrors the provider-abstraction pattern from Article 05.
 
+## What changed after review
+
+A second AI tool reviewed this repo and suggested several production-hardening additions. Three were in scope for a tutorial demo and are now built in:
+
+- **Tool schemas** — `mock-mcp-server/server.py`'s tools declare explicit, validated parameter schemas (`limit` bounded 1–100, `pod_name` required and non-empty, namespace pattern-checked). The MCP server rejects an out-of-range or missing parameter before the handler ever runs — try `get_events` with `limit: 500` and you'll get a validation error, not a silently clamped value. This is what "tool schemas prevent the agent from inventing parameters" looks like enforced, not just described.
+- **Parallel MCP calls** — the workflow no longer routes both MCP lookups through one combined node. `MCP Get Failing Pods` and `MCP Get Events` are separate nodes that both fire directly off `Parse Alert`, alongside `RAG Query` — three branches running concurrently instead of the agent calling tools one at a time. They rejoin at a 3-input `Merge` node before analysis.
+- **Per-node latency timing** — small `Mark * Latency` code nodes stamp `Date.now()` as each branch completes. `Log Execution` at the end computes how long the RAG query, each MCP call, and the LLM analysis step actually took, in milliseconds. n8n's canvas doesn't show per-node runtime by default, so this is what makes the "30-minute run" problem from the article actually measurable in your own executions instead of just visible in hindsight.
+
+Suggestions that weren't adopted, and why:
+- **Planning loops / multi-agent orchestration** — this would have the agent decide its own tool-call sequence, which runs against the article's core argument: bound the agent to one step inside a deterministic pipeline, don't let it plan freely. Fits a different article, not this one.
+- **MCP connection pooling / rate limiting** — a real production concern, but not something a single-user local tutorial demo needs. Worth a line in your own production notes, not new code here.
+
 ## Execution limits (do this before your first real test run)
 
 The article's central warning: an LLM agent node makes execution non-deterministic. This workflow ships with the guardrails already configured, but verify them after import:
@@ -115,7 +127,8 @@ Full detail on all of the above is in the article itself.
 ## Troubleshooting
 
 - **Nodes show a red exclamation mark on import** — credentials don't transfer between n8n instances. Recreate them per step 4 above.
-- **MCP Client node can't connect** — confirm `mock-mcp-server` is healthy: `docker compose logs mock-mcp-server`. The SSE endpoint is `http://mock-mcp-server:8080/sse` from inside the Docker network, not `localhost`.
+- **MCP Get Failing Pods / MCP Get Events can't connect** — confirm `mock-mcp-server` is healthy: `docker compose logs mock-mcp-server`. The SSE endpoint is `http://mock-mcp-server:8080/sse` from inside the Docker network, not `localhost`.
+- **MCP node rejects a call with a validation error** — that's the tool schema working as intended, not a bug. Check the parameter against the bounds in `mock-mcp-server/server.py` (e.g. `limit` must be 1–100).
 - **Slack node fails** — double check `SLACK_WEBHOOK_URL` in `.env` and that `docker compose up -d` was re-run after editing it (`docker compose up -d --force-recreate n8n`).
 - **Workflow runs but never posts to Slack** — check the IF node's condition; the mock MCP server's canned "no failing pods" response may be routing you down the light-notify branch. Edit `mock-services/mock-mcp-server/server.py` to return a failing pod if you want to force the full-alert branch.
 

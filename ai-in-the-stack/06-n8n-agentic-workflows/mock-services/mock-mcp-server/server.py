@@ -9,10 +9,19 @@ it exactly as it would connect to the production server.
 
 To force the "full alert" branch of the workflow instead of the
 "auto-resolved" branch, edit FAILING_PODS below to a non-empty list.
+
+Tool schemas: every parameter below uses Annotated + Field to declare
+type, bounds, and whether it's required. FastMCP turns these into the
+JSON Schema advertised to the calling agent, so the agent can't invent
+an out-of-range `limit` or omit a required `pod_name` — the MCP server
+rejects the call before it reaches the handler. This is the schema
+enforcement layer the article's determinism warning calls for.
 """
 from datetime import datetime, timezone
+from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
+from pydantic import Field
 
 mcp = FastMCP("openshift-sre-diagnostics-mock", host="0.0.0.0", port=8080)
 
@@ -28,7 +37,11 @@ RECENT_EVENTS = [
 
 
 @mcp.tool()
-def get_cluster_health(cluster: str = "default") -> dict:
+def get_cluster_health(
+    cluster: Annotated[
+        str, Field(description="Cluster name to check", pattern=r"^[a-z0-9-]+$", default="default")
+    ] = "default",
+) -> dict:
     """Return overall cluster health summary (mock data)."""
     return {
         "cluster": cluster,
@@ -38,7 +51,11 @@ def get_cluster_health(cluster: str = "default") -> dict:
 
 
 @mcp.tool()
-def get_failing_pods(namespace: str = "production") -> dict:
+def get_failing_pods(
+    namespace: Annotated[
+        str, Field(description="Kubernetes namespace to inspect", pattern=r"^[a-z0-9-]+$", default="production")
+    ] = "production",
+) -> dict:
     """Return pods currently failing or crash-looping in a namespace (mock data)."""
     return {
         "namespace": namespace,
@@ -48,17 +65,32 @@ def get_failing_pods(namespace: str = "production") -> dict:
 
 
 @mcp.tool()
-def get_events(namespace: str = "production") -> dict:
+def get_events(
+    namespace: Annotated[
+        str, Field(description="Kubernetes namespace to inspect", pattern=r"^[a-z0-9-]+$", default="production")
+    ] = "production",
+    limit: Annotated[
+        int, Field(description="Max events to return", ge=1, le=100, default=50)
+    ] = 50,
+) -> dict:
     """Return recent Warning/Normal events for a namespace (mock data)."""
+    events = RECENT_EVENTS if FAILING_PODS else []
     return {
         "namespace": namespace,
-        "recent_events": RECENT_EVENTS if FAILING_PODS else [],
+        "recent_events": events[:limit],
         "checked_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
 @mcp.tool()
-def diagnose_crashloop(pod_name: str, namespace: str = "production") -> dict:
+def diagnose_crashloop(
+    pod_name: Annotated[
+        str, Field(description="Exact pod name to diagnose (required — not inferred)", min_length=1)
+    ],
+    namespace: Annotated[
+        str, Field(description="Kubernetes namespace to inspect", pattern=r"^[a-z0-9-]+$", default="production")
+    ] = "production",
+) -> dict:
     """Return a canned crash-loop diagnosis for a given pod (mock data)."""
     return {
         "pod_name": pod_name,
