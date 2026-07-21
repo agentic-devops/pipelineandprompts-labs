@@ -58,16 +58,23 @@
     },
     {
       "parameters": {
-        "sseEndpoint": "http://demo-mcp-server:8080/sse",
-        "tool": "get_failing_pods",
+        "resource": "tool",
+        "operation": "executeTool",
+        "toolName": "get_failing_pods",
         "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace } }}"
       },
       "id": "mcp-failing-pods",
       "name": "MCP Get Failing Pods",
-      "type": "n8n-nodes-base.mcpClientTool",
+      "type": "n8n-nodes-mcp.mcpClient",
       "typeVersion": 1,
       "position": [320, 300],
-      "notes": "Calls a single MCP tool directly, run in parallel with MCP Get Events rather than sequentially behind one combined node — this is the parallel-MCP-calls change. MCP client node field names vary by n8n version; verify against your installed version on import."
+      "credentials": {
+        "mcpClientApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Demo MCP Server (Streamable HTTP)"
+        }
+      },
+      "notes": "Requires the community package n8n-nodes-mcp (Settings \u2192 Community Nodes \u2192 Install \u2192 n8n-nodes-mcp), NOT the built-in MCP Client Tool node \u2014 the built-in one only works as an AI Agent sub-node and can't be wired into a Merge step like this. Create a Streamable HTTP credential pointing at http://demo-mcp-server:8080/mcp first, then select it here. SSE is deprecated in the MCP spec (2025-03-26 revision) \u2014 use Streamable HTTP for new work; only fall back to SSE if the target MCP server hasn't been updated. Calls a single MCP tool directly, run in parallel with MCP Get Events rather than sequentially behind one combined node \u2014 this is the parallel-MCP-calls change. Exact parameter/credential field names can shift between n8n-nodes-mcp versions; verify against your installed version on import."
     },
     {
       "parameters": {
@@ -81,16 +88,23 @@
     },
     {
       "parameters": {
-        "sseEndpoint": "http://demo-mcp-server:8080/sse",
-        "tool": "get_events",
+        "resource": "tool",
+        "operation": "executeTool",
+        "toolName": "get_events",
         "toolParameters": "={{ { \"namespace\": $('Parse Alert').item.json.namespace, \"limit\": 25 } }}"
       },
       "id": "mcp-events",
       "name": "MCP Get Events",
-      "type": "n8n-nodes-base.mcpClientTool",
+      "type": "n8n-nodes-mcp.mcpClient",
       "typeVersion": 1,
       "position": [320, 500],
-      "notes": "Runs concurrently with MCP Get Failing Pods and RAG Query — all three branches fire off Parse Alert at once instead of the agent calling tools one at a time. limit is bounded 1-100 server-side; see demo-mcp-server/server.py."
+      "credentials": {
+        "mcpClientApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Demo MCP Server (Streamable HTTP)"
+        }
+      },
+      "notes": "Same n8n-nodes-mcp community node and credential as MCP Get Failing Pods \u2014 reuse the same Streamable HTTP credential here. Runs concurrently with MCP Get Failing Pods and RAG Query \u2014 all three branches fire off Parse Alert at once instead of the agent calling tools one at a time. limit is bounded 1-100 server-side; see demo-mcp-server/server.py."
     },
     {
       "parameters": {

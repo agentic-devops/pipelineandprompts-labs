@@ -4,8 +4,16 @@ Demo MCP server standing in for openshift-mcp-sre-tools.
 Implements the same four read-only tool names used in the article
 (get_cluster_health, get_failing_pods, get_events, diagnose_crashloop)
 but returns canned data instead of querying a real cluster. This is a
-real MCP server over SSE transport — n8n's MCP Client node connects to
-it exactly as it would connect to the production server.
+real MCP server over Streamable HTTP transport — n8n's MCP Client node
+connects to it exactly as it would connect to the production server.
+
+Transport note: this server uses Streamable HTTP, not SSE. The MCP spec
+deprecated the HTTP+SSE transport in the 2025-03-26 revision in favor of
+Streamable HTTP — SSE still works for backward compatibility, but new
+servers shouldn't be built on it. If you're integrating against an
+existing MCP server that only speaks SSE (older deployments still do),
+swap the transport back with `mcp.run(transport="sse")` and adjust the
+n8n credential accordingly.
 
 To force the "full alert" branch of the workflow instead of the
 "auto-resolved" branch, edit FAILING_PODS below to a non-empty list.
@@ -101,4 +109,4 @@ def diagnose_crashloop(
 
 
 if __name__ == "__main__":
-    mcp.run(transport="sse")
+    mcp.run(transport="streamable-http")
