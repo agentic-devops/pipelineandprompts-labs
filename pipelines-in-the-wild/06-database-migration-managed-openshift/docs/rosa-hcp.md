@@ -26,7 +26,7 @@ aws secretsmanager create-secret --name db-migration/app \
   --secret-string '{"username":"db_app","password":"<app-pass>","host":"postgres","port":"5432","dbname":"orders"}'
 ```
 
-3. Give ESO's controller SA (or a dedicated SA) IRSA access to those secrets — same OIDC pattern as the [IRSA demo](../../identity/irsa-workload-identity/).
+3. Give ESO's controller SA (or a dedicated SA) IRSA access to those secrets. [AUTHOR TO VALIDATE] — no companion IRSA walkthrough exists in this lab yet; if you build one later, link it here. For now, follow AWS's IRSA setup docs directly: configure an IAM role trust policy scoped to this cluster's OIDC provider, and annotate the `db-migrator` ServiceAccount with `eks.amazonaws.com/role-arn` (or the ROSA-equivalent STS role) granting `secretsmanager:GetSecretValue` on only the three `db-migration/*` secret ARNs.
 4. Apply:
 
 ```bash

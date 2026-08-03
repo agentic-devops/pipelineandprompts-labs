@@ -44,6 +44,8 @@ Lab default (`USE_ESO=0`): `openshift/secrets/fallback-secret.yaml` creates the 
 
 Jobs use `postgres:16-alpine` + `psql`, mounting SQL from a ConfigMap built by `scripts/run-phase.sh`. Production alternatives: Flyway/Liquibase/Atlas as the Job image — keep the **same** SA + role split.
 
+Expand and Contract (`migrate-job.yaml.tpl`) run each mounted `.sql` file once, in order — safe because both phases are single, bounded DDL statements. Backfill (`backfill-job.yaml.tpl`) is different: it runs each file in a loop, in batches, until the file reports 0 rows touched, pausing briefly between batches. This is not a stylistic choice — see [scenario.md](scenario.md) for why an unbatched backfill on a large table is the same failure mode this lab exists to prevent.
+
 ## ROSA HCP notes
 
 - Hosted control plane: your Jobs run on the worker/data plane; that is fine.

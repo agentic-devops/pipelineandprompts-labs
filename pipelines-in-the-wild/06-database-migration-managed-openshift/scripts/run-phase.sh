@@ -50,8 +50,21 @@ oc create configmap "${CM}" -n "${NS}" --from-file="${SQL_DIR}"
 
 SCRATCH="$(mktemp)"
 trap 'rm -f "${SCRATCH}"' EXIT
-sed -e "s/PHASE/${PHASE}/g" -e "s/SECRET_NAME/${SECRET}/g" \
-  "${ROOT_DIR}/openshift/jobs/migrate-job.yaml.tpl" > "${SCRATCH}"
+
+if [[ "${PHASE}" == "backfill" ]]; then
+  # Backfill runs as a real batch loop (see openshift/jobs/backfill-job.yaml.tpl
+  # and migrations/backfill/*.sql for why this phase is not a single-shot
+  # apply like expand/contract). It needs an extra ConfigMap for the
+  # shared bookkeeping SQL the loop calls after each file completes.
+  oc delete configmap migration-scripts -n "${NS}" --ignore-not-found
+  oc create configmap migration-scripts -n "${NS}" \
+    --from-file="${ROOT_DIR}/scripts/mark-migration-applied.sql"
+  sed -e "s/SECRET_NAME/${SECRET}/g" \
+    "${ROOT_DIR}/openshift/jobs/backfill-job.yaml.tpl" > "${SCRATCH}"
+else
+  sed -e "s/PHASE/${PHASE}/g" -e "s/SECRET_NAME/${SECRET}/g" \
+    "${ROOT_DIR}/openshift/jobs/migrate-job.yaml.tpl" > "${SCRATCH}"
+fi
 
 oc apply -f "${SCRATCH}" -n "${NS}"
 

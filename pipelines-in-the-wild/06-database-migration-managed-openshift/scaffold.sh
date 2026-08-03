@@ -32,14 +32,16 @@ touch \
 cat > "${BASE}/README.md" <<'EOF'
 # Database Migration (scaffold)
 
-Run from the MCS tree copy, or populate:
+This is an empty directory tree only. Populate it with:
 
 - `sql/` baseline + roles
 - `migrations/{expand,backfill,contract}/`
 - `openshift/` SA, Jobs, ESO
 - `scripts/deploy.sh` / `run-phase.sh`
 
-See the full lab under `operations/database-migration` in the MCS repo.
+For a fully working reference implementation, see the populated version
+of this lab at:
+pipelineandprompts-labs/pipelines-in-the-wild/06-database-migration-managed-openshift
 EOF
 
 echo "Scaffolded ${BASE}"

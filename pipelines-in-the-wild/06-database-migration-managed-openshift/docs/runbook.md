@@ -35,6 +35,19 @@ New orders populate both legacy and new fields.
 ./scripts/verify.sh --phase backfill
 ```
 
+Unlike Expand and Contract, this phase runs as a **batch loop** — 500
+rows/orders per batch, short pause between batches — rather than a
+single table-wide statement. On this lab's 3-row seed data you'll see
+one real batch and then a `0` that ends the loop, but the log output
+shows the pattern you'd see against a real table:
+
+```
+==> V003__backfill_split_names.sql — batching in groups of 500
+    batch touched 3 rows (running total: 3)
+    batch touched 0 rows (running total: 3)
+    V003__backfill_split_names.sql: done, 3 rows total
+```
+
 Expect: zero null first/last names on historical rows; `order_items` count matches JSONB lengths.
 
 ## 4. Cutover
