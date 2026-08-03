@@ -1,5 +1,16 @@
 # Minimal RBAC: migrator SA can create Jobs in this namespace only.
 # Cluster-admin not required for day-2 migration runs.
+#
+# Deliberately excludes "secrets" from this Role. The migration Job's
+# credentials are injected via envFrom.secretRef at pod creation time
+# by the kubelet/API server — the container process itself never calls
+# the Kubernetes API to read a Secret object, so it never needs RBAC
+# permission to do so. Granting get/list/watch on secrets here would
+# let this ServiceAccount read every Secret in the namespace via `oc`
+# or client-go, which directly contradicts the least-privilege design
+# this lab is meant to demonstrate. If you need `oc describe secret`
+# access for debugging, do that as a human with your own RBAC — don't
+# grant it to the automation identity.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -10,11 +21,11 @@ rules:
     resources: ["jobs"]
     verbs: ["get", "list", "watch", "create", "delete"]
   - apiGroups: [""]
-    resources: ["pods", "pods/log", "configmaps", "secrets"]
+    resources: ["pods", "pods/log"]
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["create", "update", "patch", "delete"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

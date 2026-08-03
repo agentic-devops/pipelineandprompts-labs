@@ -1,5 +1,16 @@
 # Scenario: Online rename + JSONB normalization
 
+> **This is an illustrative stand-in, not a literal reproduction of any
+> customer's schema.** The article this lab supports is built around a
+> real incident — a `NOT NULL` column added with no default to a
+> high-traffic table during a live deploy, which broke every write from
+> pods still running the old code. This lab demonstrates the *pattern*
+> that prevents that failure (Expand/Contract, role-separated
+> migrations, batched backfill) using a generic `orders` table rather
+> than reproducing the original environment. See
+> [anti-pattern-what-not-to-do.sql](anti-pattern-what-not-to-do.sql) for
+> a direct, read-only reproduction of the actual mistake.
+
 ## Business change
 
 The order service historically stored:
@@ -41,7 +52,14 @@ t6  CONTRACT (DDL)    — DROP customer_name, DROP items
 
 ### Why not `ALTER … RENAME` / one big UPDATE?
 
-- Long locks on large tables under OLTP load
+- Long locks on large tables under OLTP load — this is why the backfill
+  migrations (`V003`, `V004`) run as a **batch loop** (500 rows/orders
+  per batch, short pause between batches) rather than a single
+  table-wide `UPDATE`. On this lab's 3-row seed table the difference is
+  invisible; on a production-sized table it's the difference between a
+  brief, repeated, low-impact lock and one long exclusive lock held for
+  the whole operation. Watch `oc logs job/db-migrate-backfill` during a
+  run — you'll see each batch reported as it completes.
 - No safe rollback if the app still expects the old column
 - Mixed DDL+DML under one privileged DB user (blast radius)
 

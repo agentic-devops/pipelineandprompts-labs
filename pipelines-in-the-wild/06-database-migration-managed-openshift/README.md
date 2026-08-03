@@ -15,7 +15,7 @@ Legacy `orders` table stores a single `customer_name` and packs line items in a 
 | **App cutover** | App (dual-write) | Read/write new shape; keep legacy warm |
 | **Contract** | DDL role | Drop `customer_name` + `items` after apps stop using them |
 
-Full narrative: [docs/scenario.md](docs/scenario.md) · Architecture: [docs/architecture.md](docs/architecture.md) · Runbook: [docs/runbook.md](docs/runbook.md)
+Full narrative: [docs/scenario.md](docs/scenario.md) · Architecture: [docs/architecture.md](docs/architecture.md) · Runbook: [docs/runbook.md](docs/runbook.md) · What actually broke: [docs/anti-pattern-what-not-to-do.sql](docs/anti-pattern-what-not-to-do.sql) (read-only — do not run)
 
 ## Directory layout
 
@@ -27,7 +27,8 @@ database-migration/
 │   ├── architecture.md
 │   ├── scenario.md
 │   ├── runbook.md
-│   └── rosa-hcp.md
+│   ├── rosa-hcp.md
+│   └── anti-pattern-what-not-to-do.sql  # read-only — the real incident, not wired into any script
 ├── sql/
 │   ├── 00-baseline-schema.sql  # Legacy schema
 │   ├── 01-roles.sql            # DDL / DML / app roles
@@ -41,12 +42,13 @@ database-migration/
 │   ├── 10-serviceaccount.yaml  # db-migrator SA
 │   ├── 20-rbac.yaml
 │   ├── 30-postgres.yaml
-│   ├── jobs/
+│   ├── jobs/                    # migrate-job.yaml.tpl (expand/contract), backfill-job.yaml.tpl (batch loop)
 │   └── secrets/                # ESO + fallback Secret
 ├── apps/order-api/             # Tiny API proving dual-read
 └── scripts/
-    ├── deploy.sh               # ROSA HCP lab deploy
-    ├── run-phase.sh            # expand | backfill | contract
+    ├── deploy.sh                    # ROSA HCP lab deploy
+    ├── run-phase.sh                 # expand | backfill | contract
+    ├── mark-migration-applied.sql   # one-time bookkeeping insert, called after a backfill batch loop finishes
     ├── verify.sh
     └── cleanup.sh
 ```
@@ -55,7 +57,7 @@ database-migration/
 
 ```bash
 # oc login to your ROSA HCP cluster first
-cd operations/database-migration
+cd pipelines-in-the-wild/06-database-migration-managed-openshift
 
 ./scripts/deploy.sh                 # NS, SA, Postgres, roles, seed, fallback secrets
 ./scripts/run-phase.sh expand       # DDL Job

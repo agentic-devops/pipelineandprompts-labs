@@ -1,0 +1,59 @@
+-- anti-pattern-what-not-to-do.sql
+--
+-- DO NOT RUN THIS AGAINST THE LAB DATABASE.
+-- Not wired into deploy.sh, run-phase.sh, or any Job — this file is
+-- for reading only, to show the actual mistake that caused the
+-- production incident this lab is built around.
+--
+-- ============================================================
+-- THE MISTAKE
+-- ============================================================
+-- A NOT NULL column with no default, added in the same deploy as
+-- application code that doesn't know about it yet:
+
+-- ALTER TABLE orders
+--   ADD COLUMN new_feature_id INTEGER NOT NULL;
+
+-- ============================================================
+-- WHY IT BREAKS
+-- ============================================================
+-- 1. The migration runs first (e.g. as an Argo CD PreSync hook) and
+--    succeeds — the ALTER itself is valid DDL.
+-- 2. The pods that are STILL RUNNING at that moment are the OLD
+--    version of the code. They have no idea this column exists and
+--    never provide a value for it in their INSERT statements.
+-- 3. Every one of those inserts is rejected by the NOT NULL
+--    constraint. Not some inserts — every single one, immediately.
+-- 4. If the table is on the hot path (checkout, order tracking,
+--    anything with continuous writes), the application looks fully
+--    down within seconds, even though nothing crashed — the writes
+--    are just being refused at the database level.
+--
+-- ============================================================
+-- WHY "JUST ROLL BACK THE DEPLOY" DOESN'T FIX IT
+-- ============================================================
+-- Argo CD's rollback reverts the *application* Deployment to the
+-- previous image. It does not — and cannot — undo a schema change.
+-- The column and its NOT NULL constraint are still there. Rolling
+-- the app back just means you're now running OLD code (which never
+-- writes the column) against a schema that REQUIRES it. Same
+-- failure, different direction.
+--
+-- The actual fix in that incident was manual: force-kill the stuck
+-- ALTER, scale the deployment to zero to stop the write storm, then
+-- run something equivalent to:
+--
+-- ALTER TABLE orders
+--   ALTER COLUMN new_feature_id DROP NOT NULL;
+--
+-- ...before it was safe to bring traffic back on the old code.
+--
+-- ============================================================
+-- WHAT THIS LAB DOES INSTEAD
+-- ============================================================
+-- See migrations/expand/V001__expand_add_name_columns.sql: the new
+-- columns are added nullable, with no constraint, in Expand. The
+-- NOT NULL constraint is only added in Contract
+-- (migrations/contract/V005__contract_drop_legacy.sql) — and only
+-- after every row already has a value, so the constraint never has
+-- a chance to reject a write from code that doesn't know about it.
