@@ -1,5 +1,7 @@
 # terraform-managed-openshift-state
 
+> **Status:** Full walkthrough
+
 Working Terraform configurations for ROSA, ARO, and OSD state management — bootstrap modules, per-environment remote backends, drift detection workflows, and orphan recovery scripts from production engagements.
 
 Supports the article:

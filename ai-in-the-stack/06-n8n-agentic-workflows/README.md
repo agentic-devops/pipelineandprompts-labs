@@ -1,10 +1,16 @@
 # n8n Agentic Workflows — Incident Triage Demo
 
+> **Status:** Full walkthrough
+
 Companion repo for **AI in the Stack #6: Building n8n Workflows for Platform Engineering Automation**.
+
+> Article: https://pipelineandprompts.com/posts/ai-in-the-stack-06-n8n-workflows/
 
 This repo lets you run the full incident-triage workflow from the article on your own machine — webhook trigger → parallel RAG + MCP lookups → LLM analysis → conditional Slack notification — using lightweight demo services, so you don't need a live OpenShift cluster or GCP project just to see the shape of the thing work.
 
 Once the demo runs end-to-end, swap the demo RAG and MCP services for the real ones (Article 02's RAG pipeline and [openshift-mcp-sre-tools](https://github.com/nedoshi/openshift-mcp-sre-tools)) and point the LLM node at Vertex AI, exactly as described in the article.
+
+> **Transport:** this demo MCP speaks **Streamable HTTP**. Lab 03 (`03-mcp-for-kubernetes`) speaks **SSE**. Prefer the demo server or `openshift-mcp-sre-tools` for this workflow unless you change the n8n credential to SSE.
 
 ## What's in here
 

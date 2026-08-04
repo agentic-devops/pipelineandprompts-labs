@@ -1,5 +1,6 @@
-cat > pipelines-in-the-wild/06-database-migration-managed-openshift/README.md << 'EOF'
 # Database Migration on ROSA / ARO
+
+> **Status:** Full walkthrough
 
 Online schema change demo using **Expand/Contract**, **DDL/DML role split**, **External Secrets Operator (ESO)**, and a **dedicated migrator ServiceAccount**.
 
@@ -30,4 +31,15 @@ Full narrative: [docs/scenario.md](docs/scenario.md) · Architecture: [docs/arch
 - ROSA HCP (or ARO) with `oc` logged in
 - Cluster ability to create projects / deploy workloads
 - Optional: External Secrets Operator + cloud secret store for the ESO path
-EOF
+
+## Quick Start
+
+```bash
+git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
+cd pipelineandprompts-labs/pipelines-in-the-wild/06-database-migration-managed-openshift
+# Follow docs/runbook.md for phase-by-phase apply order
+```
+
+## Linked Article
+
+https://pipelineandprompts.com/posts/ — companion to the Pipelines in the Wild series (expand/contract migrations on managed OpenShift).

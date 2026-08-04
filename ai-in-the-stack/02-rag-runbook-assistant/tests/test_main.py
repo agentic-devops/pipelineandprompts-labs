@@ -1,17 +1,13 @@
-import pytest
-from fastapi.testclient import TestClient
-from unittest.mock import patch, Mock
-from app.main import app
+from unittest.mock import patch
 
-client = TestClient(app)
+from tests.conftest import API_HEADERS
 
 
 class TestHealthEndpoint:
-    """Test /health endpoint."""
+    """Test /health endpoint (unauthenticated)."""
 
-    @patch('app.main.chroma_client')
-    def test_returns_healthy_when_vector_store_reachable(self, mock_chroma):
-        """Should return 200 when Chroma is reachable."""
+    @patch("app.main.chroma_client")
+    def test_returns_healthy_when_vector_store_reachable(self, mock_chroma, client):
         mock_chroma.heartbeat.return_value = 123456789
 
         response = client.get("/health")
@@ -19,12 +15,11 @@ class TestHealthEndpoint:
         assert response.status_code == 200
         assert response.json() == {
             "status": "healthy",
-            "vector_store": "reachable"
+            "vector_store": "reachable",
         }
 
-    @patch('app.main.chroma_client')
-    def test_returns_503_when_vector_store_unreachable(self, mock_chroma):
-        """Should return 503 when Chroma fails."""
+    @patch("app.main.chroma_client")
+    def test_returns_503_when_vector_store_unreachable(self, mock_chroma, client):
         mock_chroma.heartbeat.side_effect = Exception("Connection failed")
 
         response = client.get("/health")
@@ -34,96 +29,111 @@ class TestHealthEndpoint:
 
 
 class TestIngestEndpoint:
-    """Test /ingest endpoint."""
+    """Test /ingest endpoint (requires X-API-Key)."""
 
-    @patch('app.main.ingest_runbooks')
-    def test_ingests_runbooks_successfully(self, mock_ingest):
-        """Should call ingest function and return results."""
+    def test_rejects_missing_api_key(self, client):
+        response = client.post("/ingest")
+        assert response.status_code == 401
+
+    @patch("app.main.ingest_runbooks")
+    def test_ingests_runbooks_successfully(self, mock_ingest, client):
         mock_ingest.return_value = {
             "status": "ingested",
             "chunks_ingested": 10,
-            "runbooks_processed": 2
+            "runbooks_processed": 2,
         }
 
-        response = client.post("/ingest")
+        response = client.post("/ingest", headers=API_HEADERS)
 
         assert response.status_code == 200
         assert response.json()["status"] == "ingested"
         assert response.json()["chunks_ingested"] == 10
 
-    @patch('app.main.ingest_runbooks')
-    def test_handles_ingestion_errors(self, mock_ingest):
-        """Should return 500 on ingestion failure."""
+    @patch("app.main.ingest_runbooks")
+    def test_handles_ingestion_errors(self, mock_ingest, client):
         mock_ingest.side_effect = Exception("Ingestion failed")
 
-        response = client.post("/ingest")
+        response = client.post("/ingest", headers=API_HEADERS)
 
         assert response.status_code == 500
         assert "Ingestion failed" in response.json()["detail"]
 
 
 class TestQueryEndpoint:
-    """Test /query endpoint."""
+    """Test /query endpoint (requires X-API-Key)."""
 
-    @patch('app.main.query_runbooks')
-    def test_queries_runbooks_successfully(self, mock_query):
-        """Should accept question and return answer with sources."""
+    def test_rejects_missing_api_key(self, client):
+        response = client.post("/query", json={"question": "test"})
+        assert response.status_code == 401
+
+    @patch("app.main.query_runbooks")
+    def test_queries_runbooks_successfully(self, mock_query, client):
         mock_query.return_value = {
             "answer": "Restart the service",
-            "sources": ["troubleshooting.md"]
+            "sources": ["troubleshooting.md"],
         }
 
         response = client.post(
             "/query",
-            json={"question": "how to fix the service?"}
+            headers=API_HEADERS,
+            json={"question": "how to fix the service?"},
         )
 
         assert response.status_code == 200
         assert response.json()["answer"] == "Restart the service"
         assert "troubleshooting.md" in response.json()["sources"]
 
-    def test_rejects_empty_question(self):
-        """Should return 400 for empty question."""
-        response = client.post("/query", json={"question": ""})
+    def test_rejects_empty_question(self, client):
+        response = client.post(
+            "/query",
+            headers=API_HEADERS,
+            json={"question": ""},
+        )
 
         assert response.status_code == 400
         assert "cannot be empty" in response.json()["detail"]
 
-    def test_rejects_whitespace_only_question(self):
-        """Should return 400 for whitespace-only question."""
-        response = client.post("/query", json={"question": "   "})
+    def test_rejects_whitespace_only_question(self, client):
+        response = client.post(
+            "/query",
+            headers=API_HEADERS,
+            json={"question": "   "},
+        )
 
         assert response.status_code == 400
         assert "cannot be empty" in response.json()["detail"]
 
-    def test_rejects_too_long_question(self):
-        """Should return 400 for questions exceeding max length."""
-        long_question = "a" * 2001
-
-        response = client.post("/query", json={"question": long_question})
+    def test_rejects_too_long_question(self, client):
+        response = client.post(
+            "/query",
+            headers=API_HEADERS,
+            json={"question": "a" * 2001},
+        )
 
         assert response.status_code == 400
         assert "exceeds maximum length" in response.json()["detail"]
 
-    @patch('app.main.query_runbooks')
-    def test_handles_query_errors(self, mock_query):
-        """Should return 500 on query failure."""
+    @patch("app.main.query_runbooks")
+    def test_handles_query_errors(self, mock_query, client):
         mock_query.side_effect = Exception("Query failed")
 
         response = client.post(
             "/query",
-            json={"question": "test question"}
+            headers=API_HEADERS,
+            json={"question": "test question"},
         )
 
         assert response.status_code == 500
         assert "Query failed" in response.json()["detail"]
 
-    @patch('app.main.query_runbooks')
-    def test_accepts_valid_question_length(self, mock_query):
-        """Should accept questions up to 2000 characters."""
+    @patch("app.main.query_runbooks")
+    def test_accepts_valid_question_length(self, mock_query, client):
         mock_query.return_value = {"answer": "Answer", "sources": []}
-        valid_question = "a" * 2000
 
-        response = client.post("/query", json={"question": valid_question})
+        response = client.post(
+            "/query",
+            headers=API_HEADERS,
+            json={"question": "a" * 2000},
+        )
 
         assert response.status_code == 200

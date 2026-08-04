@@ -1,5 +1,7 @@
 # Prompt Versioning CI Gate for OpenShift
 
+> **Status:** Full walkthrough
+
 Enforces schema validation, secret scanning, and model governance for LLM prompts before they reach your AI workflows on OpenShift. Prompts are versioned in Git, validated via GitHub Actions, and synced to OpenShift as ConfigMaps.
 
 ## Prerequisites
@@ -44,7 +46,7 @@ Enforces schema validation, secret scanning, and model governance for LLM prompt
 ## Directory Structure
 
 ```
-prompt-versioning-ci-openshift/
+04-prompt-versioning-ci/
 ├── README.md                      # This file
 ├── .prompt-policy.yaml            # Approved model versions
 ├── .gitleaks.toml                 # Secret detection rules

@@ -39,11 +39,11 @@ git --version         # git version 2.x
 ## Step 1 — Clone the repo
 
 ```zsh
-git clone https://github.com/pipelineandprompts-labs/waybill
-cd waybill
+git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
+cd pipelineandprompts-labs/pipelines-in-the-wild/02-retry-logic-tiered-alerting
 ```
 
-Everything from here on assumes you're inside the `waybill/` directory.
+Everything from here on assumes you're inside this lab directory.
 
 ---
 

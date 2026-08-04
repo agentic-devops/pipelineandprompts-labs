@@ -1,10 +1,12 @@
 # Waybill API
 
+> **Status:** Full walkthrough
+
 A shipment tracking and waybill management API for logistics operations.
 Built with FastAPI + PostgreSQL. Used as the demo application in:
 
 > **Pipelines in the Wild #02 — "Your Pipeline Will Break. Here's How to Make It Fix Itself."**
-> pipelineandprompts.dev/pipelines-in-the-wild/02
+> https://pipelineandprompts.com/posts/retry-logic-and-tiered-alerting-github-actions/
 
 ---
 
@@ -32,9 +34,9 @@ The `/health` endpoint returns the deployment slot (`blue` or `green`) and DB co
 ## Quick start (local)
 
 ```bash
-# Clone and enter
-git clone https://github.com/pipelineandprompts-labs/waybill
-cd waybill
+# Clone and enter (monorepo path)
+git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
+cd pipelineandprompts-labs/pipelines-in-the-wild/02-retry-logic-tiered-alerting
 
 # Start Postgres
 docker compose up postgres -d

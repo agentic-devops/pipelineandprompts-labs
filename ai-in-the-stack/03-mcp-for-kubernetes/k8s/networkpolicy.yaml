@@ -19,7 +19,7 @@ spec:
     - ports:
         - port: 443
           protocol: TCP
-        - port: 6443    # OpenShift API — AUTHOR: confirm port for your cluster
+        - port: 6443    # OpenShift API — TODO(reader): confirm port for your cluster
           protocol: TCP
     # DNS resolution
     - ports:

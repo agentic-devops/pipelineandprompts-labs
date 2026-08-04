@@ -1,15 +1,16 @@
 # main.py — MCP server entry point
-# Supports stdio (local) and HTTP/SSE (remote/cluster) transports.
-import asyncio
+# Transport: HTTP+SSE (see README). Lab 06 n8n demo uses Streamable HTTP separately.
 import logging
 import os
+from contextvars import ContextVar
+
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
-from starlette.routing import Route
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse, Response
+from starlette.routing import Route
 import uvicorn
 
 from tools import register_tools
@@ -21,20 +22,31 @@ EXPECTED_API_KEY = os.environ.get("MCP_API_KEY")
 if not EXPECTED_API_KEY:
     raise RuntimeError("MCP_API_KEY environment variable not set — cannot start server")
 
+# Per-request session identity for audit + rate limiting
+session_id_var: ContextVar[str] = ContextVar("session_id", default="anonymous")
+
 
 class APIKeyMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         # Health endpoint is unauthenticated (required for k8s probes)
         if request.url.path == "/health":
             return await call_next(request)
+
         api_key = request.headers.get("X-API-Key")
         if api_key != EXPECTED_API_KEY:
             return JSONResponse({"error": "Unauthorised"}, status_code=401)
-        return await call_next(request)
+
+        # Prefer explicit session header; fall back to API key suffix for multi-tenant demos
+        session_id = request.headers.get("X-Session-Id") or f"key-{(api_key or '')[-8:]}"
+        token = session_id_var.set(session_id)
+        try:
+            return await call_next(request)
+        finally:
+            session_id_var.reset(token)
 
 
 server = Server("platform-mcp")
-register_tools(server)
+register_tools(server, session_id_var)
 
 transport = SseServerTransport("/messages")
 
@@ -57,7 +69,7 @@ app = Starlette(
         Route("/sse", endpoint=handle_sse),
         Route("/health", endpoint=health),
     ],
-    middleware=[Middleware(APIKeyMiddleware)]
+    middleware=[Middleware(APIKeyMiddleware)],
 )
 
 if __name__ == "__main__":

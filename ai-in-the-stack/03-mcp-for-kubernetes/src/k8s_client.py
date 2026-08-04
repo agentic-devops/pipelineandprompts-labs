@@ -40,7 +40,7 @@ class KubernetesClient:
         }
 
     def list_failing_pods(self, namespace: Optional[str] = None) -> list[dict]:
-        # AUTHOR: In large clusters, add field_selector or label_selector
+        # TODO(reader): In large clusters, add field_selector or label_selector
         # to avoid expensive full-cluster list calls.
         if namespace:
             pods = self.v1.list_namespaced_pod(namespace=namespace)

@@ -16,14 +16,37 @@ Foundational DevOps concepts. Hands-on labs coming soon — see that series' REA
 ## Quick Start
 
 ```bash
-# Clone all labs
 git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
 cd pipelineandprompts-labs
 
-# Try the RAG runbook assistant
+# Fastest local demo (needs OpenAI key)
 cd ai-in-the-stack/02-rag-runbook-assistant
-docker-compose up
+cp .env.example .env   # set OPENAI_API_KEY and API_KEY
+docker compose up --build
 ```
+
+Prefer no OpenAI key? Try the n8n incident-triage demo (Slack webhook optional for full path):
+
+```bash
+cd ai-in-the-stack/06-n8n-agentic-workflows
+cp .env.example .env
+docker compose up -d
+```
+
+## Lab matrix
+
+| Lab | Status | Local Docker | Cluster | Cloud keys |
+|---|---|---|---|---|
+| [AI 02 — RAG runbooks](./ai-in-the-stack/02-rag-runbook-assistant/) | Full walkthrough | Yes | Optional | OpenAI |
+| [AI 03 — MCP for Kubernetes](./ai-in-the-stack/03-mcp-for-kubernetes/) | Full walkthrough | Partial | Yes | None (kubeconfig) |
+| [AI 04 — Prompt versioning CI](./ai-in-the-stack/04-prompt-versioning-ci/) | Full walkthrough | Scripts only | OpenShift sync | OpenShift token |
+| [AI 06 — n8n incident triage](./ai-in-the-stack/06-n8n-agentic-workflows/) | Full walkthrough | Yes | Optional | Slack (optional) |
+| [Pipelines 01 — Zero-downtime](./pipelines-in-the-wild/01-zero-downtime-deployments/) | Full walkthrough | App only | ROSA/OpenShift | Cluster |
+| [Pipelines 02 — Retry / Waybill](./pipelines-in-the-wild/02-retry-logic-tiered-alerting/) | Full walkthrough | Yes | Optional | None |
+| [Pipelines 03 — Secrets](./pipelines-in-the-wild/03-secrets-management-multi-cloud/) | Full walkthrough | No | Yes | Cloud / Vault |
+| [Pipelines 04 — Terraform state](./pipelines-in-the-wild/04-terraform-managed-openshift-state/) | Full walkthrough | No | Managed OCP | Cloud |
+| [Pipelines 06 — DB migration](./pipelines-in-the-wild/06-database-migration-managed-openshift/) | Full walkthrough | Partial | ROSA/ARO | Optional ESO |
+| [AI 01 / 05, Pipelines 05](./ai-in-the-stack/) | Reference / Coming soon | — | — | — |
 
 ## Structure
 
@@ -31,7 +54,8 @@ docker-compose up
 pipelineandprompts-labs/
 ├── ai-in-the-stack/          # AI integration examples
 ├── pipelines-in-the-wild/    # CI/CD patterns
-└── devops-from-zero/         # Foundational labs
+├── devops-from-zero/         # Foundational labs (coming soon)
+└── _shared/                  # Shared Docker base images (optional)
 ```
 
 Each lab's README opens with a status label so you know what to expect before you clone:
@@ -39,12 +63,6 @@ Each lab's README opens with a status label so you know what to expect before yo
 - **Full walkthrough** — working code, tests, and a verified end-to-end setup.
 - **Reference only** — explains concepts/architecture, no runnable code yet.
 - **Coming soon** — placeholder, not yet published.
-
-Labs marked "Full walkthrough" include:
-- `README.md` with setup instructions
-- Working code
-- Tests
-- Docker configs (where applicable)
 
 ## A note on lab numbering
 

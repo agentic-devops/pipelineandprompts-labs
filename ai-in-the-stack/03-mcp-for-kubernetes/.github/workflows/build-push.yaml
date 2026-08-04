@@ -1,6 +1,6 @@
 # .github/workflows/build-push.yaml
 # Builds and pushes the MCP server container image on push to main
-# AUTHOR: configure REGISTRY, IMAGE_NAME, and registry credentials in repo secrets
+# TODO(reader): configure REGISTRY, IMAGE_NAME, and registry credentials in repo secrets
 
 name: Build and Push
 
@@ -13,7 +13,7 @@ on:
       - 'requirements.txt'
 
 env:
-  REGISTRY: ghcr.io                           # AUTHOR: replace with your registry
+  REGISTRY: ghcr.io                           # TODO(reader): replace with your registry
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:

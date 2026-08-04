@@ -4,42 +4,45 @@ Hands-on code examples from the [Pipelines in the Wild](https://pipelineandpromp
 
 ## Labs
 
-1. [Zero-Downtime Deployments on OpenShift](01-zero-downtime-deployments/) - Blue/green deployments with gradual traffic shifting on ROSA HCP
-2. [Retry Logic & Tiered Alerting](02-retry-logic-tiered-alerting/) - Self-healing pipelines with intelligent retry and alert escalation
-3. [Secrets Management in Multi-Cloud Pipelines](03-secrets-management-multi-cloud/) - External Secrets Operator manifests, RBAC templates, and rotation runbook for AWS, Azure, and Vault
-4. [Terraform State Management for Managed OpenShift](04-terraform-managed-openshift-state/) - Remote state bootstrap, drift detection, and orphan recovery for ROSA, ARO, and OSD
+| # | Lab | Status |
+|---|---|---|
+| 1 | [Zero-Downtime Deployments on OpenShift](01-zero-downtime-deployments/) | Full walkthrough |
+| 2 | [Retry Logic & Tiered Alerting](02-retry-logic-tiered-alerting/) | Full walkthrough |
+| 3 | [Secrets Management in Multi-Cloud Pipelines](03-secrets-management-multi-cloud/) | Full walkthrough |
+| 4 | [Terraform State Management for Managed OpenShift](04-terraform-managed-openshift-state/) | Full walkthrough |
+| 5 | [Stop Managing Kubernetes](05-stop-managing-k8/) | Reference only |
+| 6 | [Database Migration on Managed OpenShift](06-database-migration-managed-openshift/) | Full walkthrough |
 
 ## Prerequisites
 
 - GitHub account with Actions enabled
-- OpenShift cluster (ROSA HCP recommended) or Kubernetes cluster
+- OpenShift cluster (ROSA HCP recommended) or Kubernetes cluster (labs 01, 03, 06)
 - `oc` CLI or `kubectl`
-- Docker (for local testing)
-- Terraform (for lab 3)
+- Docker (for local testing — labs 01 app, 02)
+- Terraform (lab 04)
 
 ## What You'll Learn
-
-These labs demonstrate production CI/CD patterns used in real-world platform engineering:
 
 - **Zero-downtime deployments**: HAProxy-based blue/green with canary progression
 - **Pipeline resilience**: Automatic retry logic with exponential backoff
 - **Alert optimization**: Tiered alerting to reduce noise and improve signal
-- **Secrets management**: Vault integration, rotation strategies, and compliance
-- **Terraform state management**: Remote backends, drift detection, and orphan recovery for ROSA, ARO, and OSD
-
-Each lab includes working code, GitHub Actions workflows, and step-by-step setup instructions.
+- **Secrets management**: Vault / cloud secret stores, rotation strategies, RBAC
+- **Terraform state management**: Remote backends, drift detection, and orphan recovery
+- **Online schema changes**: Expand/contract migrations with role-split Jobs
 
 ## Quick Start
 
 ```bash
-# Clone the repo
 git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
 cd pipelineandprompts-labs/pipelines-in-the-wild
 
-# Try the zero-downtime deployment demo
-cd 01-zero-downtime-deployments
-# Follow the README for OpenShift setup
+# Fastest local path — Waybill API + retry demo
+cd 02-retry-logic-tiered-alerting
+cp .env.example .env
+docker compose up --build
 ```
+
+For OpenShift blue/green, see [01-zero-downtime-deployments/QUICKSTART.md](01-zero-downtime-deployments/QUICKSTART.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # AI Tooling Evaluation Framework
 
-> **Status**: Code examples coming soon
+> **Status:** Coming soon
 
 Evaluate LLM APIs for platform engineering use cases. This lab will demonstrate how to build an evaluation framework for comparing different LLM providers (OpenAI, Anthropic, Cohere) on real platform engineering tasks.
 
@@ -19,7 +19,7 @@ Evaluate LLM APIs for platform engineering use cases. This lab will demonstrate 
 
 ## Article
 
-Read the full article: [AI in the Stack #1 - AI Tooling Evaluation Framework](https://pipelineandprompts.com/series/ai-in-the-stack/)
+Read the full article: [AI in the Stack #1 - AI Tooling Evaluation Framework](https://pipelineandprompts.com/posts/ai-tooling-openshift-evaluation-framework/)
 
 ---
 

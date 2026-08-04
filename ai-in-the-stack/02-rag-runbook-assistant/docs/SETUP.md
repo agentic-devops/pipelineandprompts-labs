@@ -23,8 +23,8 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/pipeline-and-prompts-labs/ai-stack-02-rag-runbooks.git
-   cd ai-stack-02-rag-runbooks
+   git clone https://github.com/agentic-devops/pipelineandprompts-labs.git
+   cd pipelineandprompts-labs/ai-in-the-stack/02-rag-runbook-assistant
    ```
 
 2. **Create and activate virtual environment:**
@@ -49,9 +49,10 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
    cp .env.example .env
    ```
    
-   Edit `.env` and add your OpenAI API key:
+   Edit `.env` and set both required keys:
    ```
    OPENAI_API_KEY=sk-your-actual-key-here
+   API_KEY=change-me-to-a-long-random-string
    ```
 
 5. **Add your runbooks:**
@@ -74,7 +75,8 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
 
 7. **Ingest runbooks:**
    ```bash
-   curl -X POST http://localhost:8080/ingest
+   curl -X POST http://localhost:8080/ingest \
+     -H "X-API-Key: change-me-to-a-long-random-string"
    ```
    
    Expected response:
@@ -90,6 +92,7 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
    ```bash
    curl -X POST http://localhost:8080/query \
      -H "Content-Type: application/json" \
+     -H "X-API-Key: $API_KEY" \
      -d '{"question": "how do I troubleshoot a pod in CrashLoopBackOff?"}'
    ```
 
@@ -108,6 +111,7 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
      --name runbook-rag \
      -p 8080:8080 \
      -e OPENAI_API_KEY=$OPENAI_API_KEY \
+     -e API_KEY=$API_KEY \
      -v $(pwd)/chroma_db:/app/chroma_db \
      -v $(pwd)/runbooks:/app/runbooks \
      runbook-rag:latest
@@ -120,9 +124,11 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
 
 4. **Ingest and query:**
    ```bash
-   curl -X POST http://localhost:8080/ingest
+   curl -X POST http://localhost:8080/ingest \
+     -H "X-API-Key: $API_KEY"
    curl -X POST http://localhost:8080/query \
      -H "Content-Type: application/json" \
+     -H "X-API-Key: $API_KEY" \
      -d '{"question": "your question here"}'
    ```
 
@@ -273,7 +279,8 @@ This guide walks through setting up the RAG pipeline for internal runbooks in di
 8. **Trigger initial ingest:**
    ```bash
    kubectl exec -n runbook-rag deployment/runbook-rag -- \
-     curl -X POST http://localhost:8080/ingest
+     curl -X POST http://localhost:8080/ingest \
+     -H "X-API-Key: $API_KEY"
    ```
 
 ## Production Configuration
@@ -376,7 +383,7 @@ def query(request: QueryRequest):
 
 **Fix:**
 ```bash
-cd /path/to/ai-stack-02-rag-runbooks
+cd /path/to/pipelineandprompts-labs/ai-in-the-stack/02-rag-runbook-assistant
 source venv/bin/activate
 uvicorn app.main:app --reload
 ```
@@ -388,7 +395,8 @@ uvicorn app.main:app --reload
 **Fix:**
 ```bash
 # Run ingest first
-curl -X POST http://localhost:8080/ingest
+curl -X POST http://localhost:8080/ingest \
+     -H "X-API-Key: $API_KEY"
 ```
 
 ### "OpenAI API error: 401 Unauthorized"
@@ -406,7 +414,8 @@ curl -X POST http://localhost:8080/ingest
 
 **Fix:**
 1. Check runbooks exist: `ls runbooks/`
-2. Re-run ingest: `curl -X POST http://localhost:8080/ingest`
+2. Re-run ingest: `curl -X POST http://localhost:8080/ingest \
+     -H "X-API-Key: $API_KEY"`
 3. Try rephrasing question to be more general
 
 ### High memory usage

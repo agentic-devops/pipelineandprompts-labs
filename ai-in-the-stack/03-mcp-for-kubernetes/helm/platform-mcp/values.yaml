@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: your-registry/platform-mcp   # AUTHOR: replace
-  tag: latest                               # AUTHOR: pin to digest in production
+  repository: your-registry/platform-mcp   # TODO(reader): replace
+  tag: latest                               # TODO(reader): pin to digest in production
   pullPolicy: Always
 
 service:
@@ -12,7 +12,7 @@ service:
 
 ingress:
   enabled: false
-  host: mcp.platform.your-domain.com        # AUTHOR: replace if enabling ingress
+  host: mcp.platform.your-domain.com        # TODO(reader): replace if enabling ingress
 
 route:
   enabled: true     # Set false on non-OpenShift clusters
@@ -35,4 +35,4 @@ secretKey: api-key
 
 networkPolicy:
   enabled: true
-  apiServerPort: 6443   # AUTHOR: confirm for your cluster
+  apiServerPort: 6443   # TODO(reader): confirm for your cluster

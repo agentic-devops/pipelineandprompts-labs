@@ -15,5 +15,5 @@ def log_tool_call(tool: str, inputs: dict, session_id: str = "unknown") -> None:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "tool": tool,
         "inputs": inputs,
-        "session_id": session_id  # AUTHOR: replace default with real session identity
+        "session_id": session_id,
     }))

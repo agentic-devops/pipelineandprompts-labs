@@ -4,54 +4,14 @@ This document covers security considerations for deploying the RAG pipeline in p
 
 ## Critical Security Issues
 
-### 1. No Authentication Layer (CRITICAL)
+### 1. API Key Authentication (implemented)
 
-**Status:** ⚠️ **NOT PRODUCTION READY**
+**Status:** `X-API-Key` is required on `/ingest` and `/query` via `app/auth.py`. `/health` stays open for probes.
 
-The default implementation has **no authentication**. Both `/ingest` and `/query` endpoints are publicly accessible.
-
-**Risks:**
-- Anyone can trigger re-ingestion, causing unnecessary OpenAI API costs
-- Arbitrary questions can be sent to your OpenAI account
-- Vector store can be flooded with junk data
-- No rate limiting or abuse prevention
-
-**Mitigation - API Key Authentication:**
-
-```python
-# app/auth.py
-import os
-from fastapi import Security, HTTPException, status
-from fastapi.security import APIKeyHeader
-
-API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
-
-async def verify_api_key(api_key: str = Security(API_KEY_HEADER)):
-    correct_key = os.getenv("API_KEY")
-    if not correct_key:
-        raise HTTPException(
-            status_code=500,
-            detail="API_KEY not configured"
-        )
-    if not api_key or api_key != correct_key:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid or missing API key"
-        )
-    return api_key
-
-# app/main.py
-from fastapi import Depends
-from app.auth import verify_api_key
-
-@app.post("/ingest", dependencies=[Depends(verify_api_key)])
-def ingest():
-    # ... existing code
-
-@app.post("/query", dependencies=[Depends(verify_api_key)])
-def query(request: QueryRequest):
-    # ... existing code
-```
+**Still not enough for production alone:**
+- Shared static keys do not give per-user audit or rotation without redeploy
+- No rate limiting — a leaked key can still burn OpenAI quota
+- Prefer platform secrets (Vault / OpenShift Secrets) over a long-lived `.env` file
 
 Usage:
 ```bash
@@ -61,21 +21,7 @@ curl -X POST http://localhost:8080/query \
   -d '{"question": "test"}'
 ```
 
-**Alternative - OAuth2/OIDC:**
-
-For enterprise environments, integrate with your existing identity provider:
-
-```python
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    # Validate JWT token
-    # Return user claims
-    pass
-```
+**Next step for enterprise:** replace the static key with OAuth2/OIDC (or an API gateway) in front of the service.
 
 ### 2. OpenAI API Key Exposure
 

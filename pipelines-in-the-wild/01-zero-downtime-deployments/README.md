@@ -1,6 +1,10 @@
 # Zero-Downtime Blue/Green Deployments on OpenShift
 
+> **Status:** Full walkthrough
+
 Production-ready blue/green deployment system for ROSA HCP (Red Hat OpenShift Service on AWS) with gradual traffic shifting, instant rollback, and human-controlled deployment gates.
+
+> Article: https://pipelineandprompts.com/posts/pitw-01-zero-downtime-deployments/
 
 ## What This Is
 

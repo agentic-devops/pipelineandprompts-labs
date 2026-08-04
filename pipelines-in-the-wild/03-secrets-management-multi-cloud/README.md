@@ -1,5 +1,7 @@
 # secrets-management-multi-cloud
 
+> **Status:** Full walkthrough
+
 Production-ready External Secrets Operator manifests, RBAC templates, and rotation runbook for managing secrets across AWS, Azure, and HashiCorp Vault in OpenShift and Kubernetes environments.
 
 This repository supports the article:
