@@ -1,0 +1,391 @@
+{
+  "summary_by_cap": {
+    "none": {
+      "hit@1": 0.8333333333333334,
+      "hit@3": 0.8333333333333334,
+      "hit@5": 0.8333333333333334,
+      "mrr": 0.8556547619047619,
+      "exp_chunks_top5": 3.1666666666666665,
+      "distinct_top5": 2.0,
+      "series_top5": 0.0
+    },
+    "1": {
+      "hit@1": 0.8333333333333334,
+      "hit@3": 0.9166666666666666,
+      "hit@5": 1.0,
+      "mrr": 0.8777777777777778,
+      "exp_chunks_top5": 1.0,
+      "distinct_top5": 5.0,
+      "series_top5": 0.08333333333333333
+    },
+    "2": {
+      "hit@1": 0.8333333333333334,
+      "hit@3": 0.8333333333333334,
+      "hit@5": 0.9166666666666666,
+      "mrr": 0.8638888888888889,
+      "exp_chunks_top5": 1.75,
+      "distinct_top5": 3.4166666666666665,
+      "series_top5": 0.0
+    },
+    "3": {
+      "hit@1": 0.8333333333333334,
+      "hit@3": 0.8333333333333334,
+      "hit@5": 0.8333333333333334,
+      "mrr": 0.8591269841269842,
+      "exp_chunks_top5": 2.4166666666666665,
+      "distinct_top5": 2.75,
+      "series_top5": 0.0
+    }
+  },
+  "per_question": [
+    {
+      "question": "How do I retry a failed deployment step with exponential backoff and alert people at different severity levels?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 5,
+          "distinct_in_top5": 1,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I pull secrets from AWS Secrets Manager or Azure Key Vault into Kubernetes?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 4,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 4,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I keep Terraform state safe and catch drift on managed OpenShift clusters?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 4,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I change a database schema during a deploy without any downtime?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 5,
+          "distinct_in_top5": 1,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I stop a bad prompt change from reaching the cluster?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How can I switch between LLM providers without rewriting my application?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 4,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How can an AI agent safely read from my Kubernetes cluster?",
+      "by_cap": {
+        "none": {
+          "position": 8,
+          "expected_in_top5": 0,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 5,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 6,
+          "expected_in_top5": 0,
+          "distinct_in_top5": 4,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 7,
+          "expected_in_top5": 0,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I shift traffic gradually between two versions of an app on OpenShift?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 4,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 4,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I make our internal runbooks searchable by meaning?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 5,
+          "distinct_in_top5": 1,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 4,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "How do I automate incident triage with a workflow tool?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "What is a container, and how is it different from a virtual machine?",
+      "by_cap": {
+        "none": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 1,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 1
+        },
+        "2": {
+          "position": 1,
+          "expected_in_top5": 2,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 1,
+          "expected_in_top5": 3,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        }
+      }
+    },
+    {
+      "question": "Should I run managed or self-hosted Kubernetes?",
+      "by_cap": {
+        "none": {
+          "position": 7,
+          "expected_in_top5": 0,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        },
+        "1": {
+          "position": 3,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 5,
+          "series_in_top5": 0
+        },
+        "2": {
+          "position": 5,
+          "expected_in_top5": 1,
+          "distinct_in_top5": 3,
+          "series_in_top5": 0
+        },
+        "3": {
+          "position": 6,
+          "expected_in_top5": 0,
+          "distinct_in_top5": 2,
+          "series_in_top5": 0
+        }
+      }
+    }
+  ],
+  "problems": []
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "question": "On ROSA with hosted control planes, how do I upgrade the worker nodes in one machine pool?",
+    "expected": "<file name of the doc that answers this for HCP>",
+    "applies_to": "hcp",
+    "note": "Template only. HCP upgrades the control plane and each machine pool separately; Classic upgrades the cluster as one."
+  },
+  {
+    "question": "How do I raise the PID limit for pods on my ROSA cluster?",
+    "expected": "<doc for the architecture the asker runs>",
+    "applies_to": "ambiguous",
+    "note": "Architecture deliberately left out, as users often do. Classic: one cluster-wide kubeletconfig. HCP: kubeletconfig attached per machine pool."
+  },
+  {
+    "question": "On ROSA with hosted control planes, how do I create a Custom Domain resource?",
+    "expected": null,
+    "applies_to": "hcp",
+    "note": "Near-miss control. CustomDomain is a Classic (pre-4.14) concept; the right behaviour is to say it doesn't apply, not to answer with Classic steps."
+  }
+]

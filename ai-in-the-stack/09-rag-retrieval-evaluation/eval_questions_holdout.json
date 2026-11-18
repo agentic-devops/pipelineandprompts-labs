@@ -1,0 +1,49 @@
+[
+  {
+    "question": "A Helm sub-chart used an API version that was removed and still passed CI. How do I block that at deploy time?",
+    "expected": "stopped-managing-kubernetes-start-managing-applications.md"
+  },
+  {
+    "question": "Traffic leaves the data centre over one private cloud link but comes back over another. How do I make the return path match?",
+    "expected": "direct-connect-expressroute-asymmetric-bgp-routing.md"
+  },
+  {
+    "question": "How do I split the bill for a shared Kubernetes cluster between departments?",
+    "expected": "cost-profile-demand-shape-cloud-elasticity.md"
+  },
+  {
+    "question": "Our customer data already stays in European regions. What else do residency rules expect from us?",
+    "expected": "data-sovereignty-in-practice.md"
+  },
+  {
+    "question": "What guardrails do I need before letting an AI tool make changes in production?",
+    "expected": "ai-in-the-stack-08-agentic-governance.md"
+  },
+  {
+    "question": "What is a private network in the cloud and how do subnets fit into it?",
+    "expected": "vpcs-and-vnets-explained.md"
+  },
+  {
+    "question": "How much extra memory does a local model use when it runs inside a container instead of directly on the machine?",
+    "expected": "09-containerized-ollama-memory-overhead.md"
+  },
+  {
+    "question": "What memory limit should a model-serving pod get so it doesn't get killed?",
+    "expected": "12-real-kubernetes-memory-ceiling.md",
+    "also_acceptable": [
+      "11-oom-kubernetes-vs-podman.md"
+    ]
+  },
+  {
+    "question": "Does a lower-precision version of a model save much RAM, and does it answer worse?",
+    "expected": "04-quantization-q4-q8-fp16.md"
+  },
+  {
+    "question": "Why should I define cloud resources in files instead of clicking through the web console?",
+    "expected": "infra-as-code.md"
+  },
+  {
+    "question": "How do I write a declarative Jenkinsfile with parallel stages?",
+    "expected": null
+  }
+]

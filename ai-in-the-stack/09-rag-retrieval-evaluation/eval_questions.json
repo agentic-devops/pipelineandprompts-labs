@@ -1,0 +1,58 @@
+[
+  {
+    "question": "How do I retry a failed deployment step with exponential backoff and alert people at different severity levels?",
+    "expected": "retry-logic-and-tiered-alerting-github-actions.md"
+  },
+  {
+    "question": "How do I pull secrets from AWS Secrets Manager or Azure Key Vault into Kubernetes?",
+    "expected": "secrets-management-multi-cloud-pipelines.md"
+  },
+  {
+    "question": "How do I keep Terraform state safe and catch drift on managed OpenShift clusters?",
+    "expected": "terraform-managed-openshift-state.md"
+  },
+  {
+    "question": "How do I change a database schema during a deploy without any downtime?",
+    "expected": "database-migrations-zero-downtime-deploys.md"
+  },
+  {
+    "question": "How do I stop a bad prompt change from reaching the cluster?",
+    "expected": "prompt-versioning-ci-openshift.md"
+  },
+  {
+    "question": "How can I switch between LLM providers without rewriting my application?",
+    "expected": "swapping-llm-providers-without-rewriting-stack.md"
+  },
+  {
+    "question": "How can an AI agent safely read from my Kubernetes cluster?",
+    "expected": "mcp-server-architecture-platform-engineering-kubernetes.md"
+  },
+  {
+    "question": "How do I shift traffic gradually between two versions of an app on OpenShift?",
+    "expected": "pitw-01-zero-downtime-deployments.md"
+  },
+  {
+    "question": "How do I make our internal runbooks searchable by meaning?",
+    "expected": "ai-in-the-stack-02-rag-runbooks.md"
+  },
+  {
+    "question": "How do I automate incident triage with a workflow tool?",
+    "expected": "ai-in-the-stack-06-n8n-workflows.md"
+  },
+  {
+    "question": "What is a container, and how is it different from a virtual machine?",
+    "expected": "what-are-containers.md"
+  },
+  {
+    "question": "Should I run managed or self-hosted Kubernetes?",
+    "expected": "managed-vs-self-hosted-handing-over-keys.md"
+  },
+  {
+    "question": "How do I check pod status with oc?",
+    "expected": null
+  },
+  {
+    "question": "What's the best pizza topping?",
+    "expected": null
+  }
+]

@@ -1,0 +1,2416 @@
+{
+  "models": {
+    "llama3.2:1b": [
+      {
+        "question": "How do I retry a failed deployment step with exponential backoff and alert people at different severity levels?",
+        "scores": [
+          [
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            0,
+            1,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            0,
+            1,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "pitw-01-zero-downtime-deployments.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I pull secrets from AWS Secrets Manager or Azure Key Vault into Kubernetes?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "secrets-management-multi-cloud-pipelines.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I keep Terraform state safe and catch drift on managed OpenShift clusters?",
+        "scores": [
+          [
+            2,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            1,
+            2,
+            2,
+            2,
+            1,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "terraform-managed-openshift-state.md",
+          "infra-as-code.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I change a database schema during a deploy without any downtime?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I stop a bad prompt change from reaching the cluster?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "prompt-versioning-ci-openshift.md",
+          "prompt-versioning-ci-openshift.md",
+          "ai-in-the-stack-07-agentic-ai-infrastructure-safety.md",
+          "stopped-managing-kubernetes-start-managing-applications.md",
+          "stopped-managing-kubernetes-start-managing-applications.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How can I switch between LLM providers without rewriting my application?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            9,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            9,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "ai-in-the-stack-07-agentic-ai-infrastructure-safety.md",
+          "prompt-versioning-ci-openshift.md",
+          "swapping-llm-providers-without-rewriting-stack.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How can an AI agent safely read from my Kubernetes cluster?",
+        "scores": [
+          [
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            1
+          ],
+          [
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            1
+          ]
+        ],
+        "top5_none": [
+          "ai-tooling-openshift-evaluation-framework.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-tooling-openshift-evaluation-framework.md",
+          "what-is-ai.md",
+          "mcp-server-architecture-platform-engineering-kubernetes.md"
+        ],
+        "position_by_cap": {
+          "none": 5,
+          "1": 4,
+          "2": 5,
+          "3": 5
+        }
+      },
+      {
+        "question": "How do I shift traffic gradually between two versions of an app on OpenShift?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I make our internal runbooks searchable by meaning?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            0,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            8,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            0,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            8,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I automate incident triage with a workflow tool?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            1,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            1,
+            2
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "gen-agentic-ai.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "What is a container, and how is it different from a virtual machine?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "what-are-containers.md",
+          "what-are-containers.md",
+          "cicd-pipelines-code-to-realworld.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "Should I run managed or self-hosted Kubernetes?",
+        "scores": [
+          [
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          [
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ]
+        ],
+        "top5_none": [
+          "kubernetes-at-scale.md",
+          "what-are-containers.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md",
+          "kubernetes-at-scale.md"
+        ],
+        "position_by_cap": {
+          "none": 6,
+          "1": 3,
+          "2": 5,
+          "3": 6
+        }
+      }
+    ],
+    "llama3.2:3b": [
+      {
+        "question": "How do I retry a failed deployment step with exponential backoff and alert people at different severity levels?",
+        "scores": [
+          [
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            6,
+            6,
+            6,
+            6,
+            4,
+            4,
+            4,
+            8,
+            4
+          ],
+          [
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            6,
+            6,
+            6,
+            6,
+            4,
+            4,
+            4,
+            8,
+            4
+          ]
+        ],
+        "top5_none": [
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I pull secrets from AWS Secrets Manager or Azure Key Vault into Kubernetes?",
+        "scores": [
+          [
+            8,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            4,
+            8,
+            8,
+            4,
+            6,
+            8,
+            6,
+            4,
+            8
+          ],
+          [
+            8,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            4,
+            8,
+            8,
+            4,
+            6,
+            8,
+            6,
+            4,
+            8
+          ]
+        ],
+        "top5_none": [
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "secrets-management-multi-cloud-pipelines.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I keep Terraform state safe and catch drift on managed OpenShift clusters?",
+        "scores": [
+          [
+            6,
+            8,
+            6,
+            8,
+            8,
+            6,
+            8,
+            8,
+            8,
+            8,
+            8,
+            6,
+            6,
+            4,
+            6,
+            6,
+            0,
+            6,
+            4,
+            6
+          ],
+          [
+            6,
+            8,
+            6,
+            8,
+            8,
+            6,
+            8,
+            8,
+            8,
+            8,
+            8,
+            6,
+            6,
+            4,
+            6,
+            6,
+            0,
+            6,
+            4,
+            6
+          ]
+        ],
+        "top5_none": [
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I change a database schema during a deploy without any downtime?",
+        "scores": [
+          [
+            6,
+            6,
+            8,
+            8,
+            6,
+            6,
+            8,
+            4,
+            8,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            4,
+            6,
+            4,
+            6
+          ],
+          [
+            6,
+            6,
+            8,
+            8,
+            6,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            4,
+            6,
+            4,
+            6
+          ]
+        ],
+        "top5_none": [
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I stop a bad prompt change from reaching the cluster?",
+        "scores": [
+          [
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6
+          ],
+          [
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6
+          ]
+        ],
+        "top5_none": [
+          "prompt-versioning-ci-openshift.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "prompt-versioning-ci-openshift.md",
+          "prompt-versioning-ci-openshift.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How can I switch between LLM providers without rewriting my application?",
+        "scores": [
+          [
+            6,
+            6,
+            8,
+            6,
+            8,
+            8,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            4,
+            6,
+            6,
+            8,
+            4,
+            6,
+            4
+          ],
+          [
+            6,
+            6,
+            8,
+            6,
+            8,
+            8,
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            4,
+            6,
+            6,
+            6,
+            4,
+            6,
+            4
+          ]
+        ],
+        "top5_none": [
+          "prompt-versioning-ci-openshift.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md"
+        ],
+        "position_by_cap": {
+          "none": 2,
+          "1": 2,
+          "2": 2,
+          "3": 2
+        }
+      },
+      {
+        "question": "How can an AI agent safely read from my Kubernetes cluster?",
+        "scores": [
+          [
+            4,
+            6,
+            6,
+            6,
+            4,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            4,
+            6,
+            8,
+            6,
+            4,
+            6
+          ],
+          [
+            4,
+            6,
+            6,
+            6,
+            4,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            4,
+            6,
+            8,
+            6,
+            4,
+            6
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "gen-agentic-ai.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-tooling-openshift-evaluation-framework.md",
+          "ai-in-the-stack-06-n8n-workflows.md"
+        ],
+        "position_by_cap": {
+          "none": 9,
+          "1": 6,
+          "2": 8,
+          "3": 9
+        }
+      },
+      {
+        "question": "How do I shift traffic gradually between two versions of an app on OpenShift?",
+        "scores": [
+          [
+            6,
+            6,
+            6,
+            2,
+            6,
+            6,
+            6,
+            6,
+            4,
+            6,
+            2,
+            4,
+            4,
+            6,
+            8,
+            6,
+            7,
+            4,
+            4,
+            8
+          ],
+          [
+            6,
+            6,
+            6,
+            2,
+            6,
+            6,
+            6,
+            6,
+            4,
+            6,
+            2,
+            4,
+            4,
+            6,
+            8,
+            6,
+            7,
+            4,
+            4,
+            8
+          ]
+        ],
+        "top5_none": [
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "prompt-versioning-ci-openshift.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I make our internal runbooks searchable by meaning?",
+        "scores": [
+          [
+            8,
+            8,
+            6,
+            6,
+            6,
+            6,
+            4,
+            8,
+            8,
+            4,
+            6,
+            6,
+            6,
+            6,
+            0,
+            4,
+            8,
+            6,
+            4,
+            6
+          ],
+          [
+            8,
+            8,
+            6,
+            6,
+            6,
+            6,
+            4,
+            8,
+            8,
+            4,
+            6,
+            6,
+            6,
+            6,
+            6,
+            4,
+            8,
+            6,
+            4,
+            6
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-tooling-openshift-evaluation-framework.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I automate incident triage with a workflow tool?",
+        "scores": [
+          [
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            6,
+            6,
+            4,
+            4,
+            8,
+            4,
+            8
+          ],
+          [
+            8,
+            6,
+            6,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            8,
+            6,
+            4,
+            8,
+            6,
+            6,
+            4,
+            4,
+            8,
+            4,
+            8
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "cicd-pipelines-code-to-realworld.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "gen-agentic-ai.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "What is a container, and how is it different from a virtual machine?",
+        "scores": [
+          [
+            8,
+            8,
+            6,
+            6,
+            6,
+            8,
+            6,
+            8,
+            8,
+            6,
+            8,
+            8,
+            6,
+            8,
+            8,
+            6,
+            6,
+            6,
+            8,
+            6
+          ],
+          [
+            8,
+            8,
+            6,
+            6,
+            6,
+            8,
+            6,
+            8,
+            6,
+            6,
+            8,
+            8,
+            6,
+            8,
+            8,
+            6,
+            6,
+            6,
+            8,
+            6
+          ]
+        ],
+        "top5_none": [
+          "what-are-containers.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md",
+          "what-are-containers.md",
+          "what-are-containers.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "Should I run managed or self-hosted Kubernetes?",
+        "scores": [
+          [
+            8,
+            6,
+            8,
+            6,
+            8,
+            4,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            4,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6
+          ],
+          [
+            8,
+            6,
+            8,
+            6,
+            8,
+            4,
+            6,
+            6,
+            6,
+            8,
+            6,
+            6,
+            4,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6,
+            6
+          ]
+        ],
+        "top5_none": [
+          "kubernetes-at-scale.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md",
+          "kubernetes-at-scale.md",
+          "what-are-containers.md"
+        ],
+        "position_by_cap": {
+          "none": 7,
+          "1": 3,
+          "2": 5,
+          "3": 6
+        }
+      }
+    ],
+    "gemma3:12b": [
+      {
+        "question": "How do I retry a failed deployment step with exponential backoff and alert people at different severity levels?",
+        "scores": [
+          [
+            3,
+            4,
+            3,
+            3,
+            9,
+            7,
+            8,
+            7,
+            1,
+            0,
+            3,
+            2,
+            6,
+            2,
+            3,
+            0,
+            0,
+            0,
+            8,
+            2
+          ],
+          [
+            3,
+            3,
+            3,
+            3,
+            9,
+            7,
+            8,
+            7,
+            1,
+            0,
+            3,
+            2,
+            6,
+            2,
+            3,
+            0,
+            0,
+            0,
+            8,
+            3
+          ]
+        ],
+        "top5_none": [
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md",
+          "retry-logic-and-tiered-alerting-github-actions.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I pull secrets from AWS Secrets Manager or Azure Key Vault into Kubernetes?",
+        "scores": [
+          [
+            7,
+            7,
+            3,
+            2,
+            7,
+            7,
+            3,
+            3,
+            0,
+            7,
+            7,
+            6,
+            7,
+            3,
+            7,
+            2,
+            3,
+            2,
+            0,
+            7
+          ],
+          [
+            7,
+            7,
+            3,
+            2,
+            7,
+            7,
+            3,
+            3,
+            0,
+            7,
+            7,
+            6,
+            7,
+            3,
+            7,
+            2,
+            3,
+            2,
+            0,
+            7
+          ]
+        ],
+        "top5_none": [
+          "secrets-management-multi-cloud-pipelines.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "secrets-management-multi-cloud-pipelines.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "secrets-management-multi-cloud-pipelines.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I keep Terraform state safe and catch drift on managed OpenShift clusters?",
+        "scores": [
+          [
+            3,
+            6,
+            3,
+            7,
+            7,
+            4,
+            3,
+            7,
+            7,
+            4,
+            4,
+            7,
+            7,
+            2,
+            6,
+            3,
+            0,
+            8,
+            0,
+            2
+          ],
+          [
+            3,
+            6,
+            3,
+            7,
+            7,
+            4,
+            3,
+            7,
+            7,
+            4,
+            4,
+            7,
+            7,
+            2,
+            6,
+            3,
+            0,
+            8,
+            0,
+            2
+          ]
+        ],
+        "top5_none": [
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md",
+          "terraform-managed-openshift-state.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I change a database schema during a deploy without any downtime?",
+        "scores": [
+          [
+            6,
+            3,
+            7,
+            3,
+            7,
+            3,
+            2,
+            0,
+            2,
+            2,
+            0,
+            7,
+            2,
+            7,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            6,
+            3,
+            7,
+            3,
+            7,
+            3,
+            2,
+            0,
+            2,
+            2,
+            0,
+            7,
+            2,
+            7,
+            0,
+            2,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "top5_none": [
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md",
+          "database-migrations-zero-downtime-deploys.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I stop a bad prompt change from reaching the cluster?",
+        "scores": [
+          [
+            7,
+            3,
+            2,
+            3,
+            6,
+            2,
+            7,
+            3,
+            7,
+            8,
+            0,
+            7,
+            0,
+            3,
+            6,
+            7,
+            7,
+            7,
+            0,
+            0
+          ],
+          [
+            7,
+            3,
+            2,
+            3,
+            6,
+            2,
+            7,
+            3,
+            7,
+            8,
+            0,
+            7,
+            0,
+            3,
+            6,
+            7,
+            7,
+            7,
+            0,
+            0
+          ]
+        ],
+        "top5_none": [
+          "prompt-versioning-ci-openshift.md",
+          "prompt-versioning-ci-openshift.md",
+          "prompt-versioning-ci-openshift.md",
+          "prompt-versioning-ci-openshift.md",
+          "swapping-llm-providers-without-rewriting-stack.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How can I switch between LLM providers without rewriting my application?",
+        "scores": [
+          [
+            3,
+            3,
+            9,
+            6,
+            9,
+            8,
+            9,
+            2,
+            2,
+            2,
+            2,
+            7,
+            9,
+            0,
+            2,
+            7,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            3,
+            3,
+            9,
+            6,
+            9,
+            8,
+            9,
+            2,
+            2,
+            2,
+            2,
+            7,
+            9,
+            0,
+            2,
+            7,
+            1,
+            0,
+            0,
+            0
+          ]
+        ],
+        "top5_none": [
+          "prompt-versioning-ci-openshift.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md",
+          "swapping-llm-providers-without-rewriting-stack.md"
+        ],
+        "position_by_cap": {
+          "none": 2,
+          "1": 2,
+          "2": 2,
+          "3": 2
+        }
+      },
+      {
+        "question": "How can an AI agent safely read from my Kubernetes cluster?",
+        "scores": [
+          [
+            3,
+            3,
+            7,
+            6,
+            7,
+            2,
+            7,
+            7,
+            6,
+            7,
+            8,
+            3,
+            3,
+            6,
+            0,
+            7,
+            6,
+            2,
+            7,
+            6
+          ],
+          [
+            3,
+            3,
+            7,
+            6,
+            7,
+            2,
+            7,
+            7,
+            6,
+            7,
+            8,
+            3,
+            3,
+            6,
+            0,
+            7,
+            6,
+            2,
+            7,
+            6
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-tooling-openshift-evaluation-framework.md",
+          "ai-in-the-stack-08-agentic-governance.md",
+          "mcp-server-architecture-platform-engineering-kubernetes.md"
+        ],
+        "position_by_cap": {
+          "none": 5,
+          "1": 4,
+          "2": 5,
+          "3": 5
+        }
+      },
+      {
+        "question": "How do I shift traffic gradually between two versions of an app on OpenShift?",
+        "scores": [
+          [
+            2,
+            3,
+            0,
+            0,
+            8,
+            3,
+            0,
+            7,
+            0,
+            0,
+            0,
+            0,
+            2,
+            7,
+            8,
+            0,
+            0,
+            2,
+            0,
+            7
+          ],
+          [
+            2,
+            3,
+            0,
+            0,
+            8,
+            3,
+            0,
+            7,
+            0,
+            0,
+            0,
+            0,
+            2,
+            7,
+            8,
+            0,
+            0,
+            2,
+            0,
+            7
+          ]
+        ],
+        "top5_none": [
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md",
+          "pitw-01-zero-downtime-deployments.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I make our internal runbooks searchable by meaning?",
+        "scores": [
+          [
+            9,
+            8,
+            8,
+            0,
+            8,
+            3,
+            0,
+            9,
+            9,
+            0,
+            0,
+            7,
+            7,
+            2,
+            3,
+            0,
+            8,
+            8,
+            0,
+            2
+          ],
+          [
+            9,
+            8,
+            8,
+            0,
+            8,
+            3,
+            0,
+            9,
+            9,
+            0,
+            0,
+            7,
+            7,
+            2,
+            3,
+            0,
+            8,
+            8,
+            0,
+            2
+          ]
+        ],
+        "top5_none": [
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-tooling-openshift-evaluation-framework.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md",
+          "ai-in-the-stack-02-rag-runbooks.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "How do I automate incident triage with a workflow tool?",
+        "scores": [
+          [
+            6,
+            7,
+            3,
+            6,
+            3,
+            3,
+            2,
+            0,
+            2,
+            7,
+            2,
+            0,
+            6,
+            0,
+            3,
+            1,
+            0,
+            6,
+            2,
+            3
+          ],
+          [
+            6,
+            7,
+            3,
+            6,
+            3,
+            3,
+            2,
+            0,
+            2,
+            7,
+            2,
+            0,
+            6,
+            0,
+            3,
+            1,
+            0,
+            6,
+            2,
+            3
+          ]
+        ],
+        "top5_none": [
+          "gen-agentic-ai.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md",
+          "ai-in-the-stack-06-n8n-workflows.md"
+        ],
+        "position_by_cap": {
+          "none": 2,
+          "1": 2,
+          "2": 2,
+          "3": 2
+        }
+      },
+      {
+        "question": "What is a container, and how is it different from a virtual machine?",
+        "scores": [
+          [
+            7,
+            7,
+            3,
+            3,
+            7,
+            3,
+            0,
+            7,
+            0,
+            3,
+            3,
+            0,
+            6,
+            0,
+            0,
+            3,
+            3,
+            2,
+            0,
+            0
+          ],
+          [
+            7,
+            7,
+            3,
+            3,
+            7,
+            3,
+            0,
+            7,
+            0,
+            3,
+            3,
+            0,
+            6,
+            0,
+            0,
+            3,
+            3,
+            2,
+            0,
+            0
+          ]
+        ],
+        "top5_none": [
+          "what-are-containers.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md",
+          "what-are-containers.md",
+          "09-containerized-ollama-memory-overhead.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      },
+      {
+        "question": "Should I run managed or self-hosted Kubernetes?",
+        "scores": [
+          [
+            7,
+            6,
+            7,
+            0,
+            3,
+            0,
+            8,
+            3,
+            1,
+            7,
+            7,
+            0,
+            0,
+            0,
+            2,
+            6,
+            3,
+            2,
+            0,
+            2
+          ],
+          [
+            7,
+            6,
+            7,
+            0,
+            3,
+            0,
+            8,
+            3,
+            1,
+            7,
+            7,
+            0,
+            0,
+            0,
+            2,
+            6,
+            3,
+            2,
+            0,
+            2
+          ]
+        ],
+        "top5_none": [
+          "managed-vs-self-hosted-handing-over-keys.md",
+          "kubernetes-at-scale.md",
+          "what-are-containers.md",
+          "kubernetes-at-scale.md",
+          "hybrid-cloud-architecture-on-prem-vs-cloud-tradeoffs.md"
+        ],
+        "position_by_cap": {
+          "none": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        }
+      }
+    ]
+  },
+  "problems": [],
+  "tables": {
+    "strict": {
+      "embedding only": {
+        "none": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.8333333333333334,
+          "mrr": 0.8556547619047619,
+          "exp_chunks_top5": 3.1666666666666665,
+          "distinct_top5": 2.0,
+          "series_top5": 0.0
+        },
+        "1": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.8777777777777778,
+          "exp_chunks_top5": 1.0,
+          "distinct_top5": 5.0,
+          "series_top5": 0.08333333333333333
+        },
+        "2": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.9166666666666666,
+          "mrr": 0.8638888888888889,
+          "exp_chunks_top5": 1.75,
+          "distinct_top5": 3.4166666666666665,
+          "series_top5": 0.0
+        },
+        "3": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.8333333333333334,
+          "mrr": 0.8591269841269842,
+          "exp_chunks_top5": 2.4166666666666665,
+          "distinct_top5": 2.75,
+          "series_top5": 0.0
+        }
+      },
+      "llama3.2:1b": {
+        "none": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.9166666666666666,
+          "mrr": 0.8638888888888889,
+          "exp_chunks_top5": 3.3333333333333335,
+          "distinct_top5": 2.1666666666666665,
+          "series_top5": 0.0
+        },
+        "1": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.8819444444444445,
+          "exp_chunks_top5": 1.0,
+          "distinct_top5": 5.0,
+          "series_top5": 0.08333333333333333
+        },
+        "2": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 1.0,
+          "mrr": 0.8666666666666667,
+          "exp_chunks_top5": 1.8333333333333333,
+          "distinct_top5": 3.5,
+          "series_top5": 0.0
+        },
+        "3": {
+          "hit@1": 0.8333333333333334,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.9166666666666666,
+          "mrr": 0.8638888888888889,
+          "exp_chunks_top5": 2.5,
+          "distinct_top5": 2.9166666666666665,
+          "series_top5": 0.0
+        }
+      },
+      "llama3.2:3b": {
+        "none": {
+          "hit@1": 0.75,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.8333333333333334,
+          "mrr": 0.8128306878306878,
+          "exp_chunks_top5": 3.5,
+          "distinct_top5": 1.8333333333333333,
+          "series_top5": 0.0
+        },
+        "1": {
+          "hit@1": 0.75,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 0.9166666666666666,
+          "mrr": 0.8333333333333334,
+          "exp_chunks_top5": 0.9166666666666666,
+          "distinct_top5": 5.0,
+          "series_top5": 0.08333333333333333
+        },
+        "2": {
+          "hit@1": 0.75,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.9166666666666666,
+          "mrr": 0.81875,
+          "exp_chunks_top5": 1.75,
+          "distinct_top5": 3.25,
+          "series_top5": 0.16666666666666666
+        },
+        "3": {
+          "hit@1": 0.75,
+          "hit@3": 0.8333333333333334,
+          "hit@5": 0.8333333333333334,
+          "mrr": 0.8148148148148149,
+          "exp_chunks_top5": 2.5,
+          "distinct_top5": 2.5833333333333335,
+          "series_top5": 0.08333333333333333
+        }
+      },
+      "gemma3:12b": {
+        "none": {
+          "hit@1": 0.75,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.85,
+          "exp_chunks_top5": 3.5833333333333335,
+          "distinct_top5": 2.25,
+          "series_top5": 0.08333333333333333
+        },
+        "1": {
+          "hit@1": 0.75,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.8541666666666666,
+          "exp_chunks_top5": 1.0,
+          "distinct_top5": 5.0,
+          "series_top5": 0.08333333333333333
+        },
+        "2": {
+          "hit@1": 0.75,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.85,
+          "exp_chunks_top5": 1.8333333333333333,
+          "distinct_top5": 3.5833333333333335,
+          "series_top5": 0.08333333333333333
+        },
+        "3": {
+          "hit@1": 0.75,
+          "hit@3": 0.9166666666666666,
+          "hit@5": 1.0,
+          "mrr": 0.85,
+          "exp_chunks_top5": 2.6666666666666665,
+          "distinct_top5": 2.8333333333333335,
+          "series_top5": 0.08333333333333333
+        }
+      }
+    }
+  },
+  "diagnostics": {
+    "llama3.2:1b": {
+      "unparsed_replies": 4,
+      "questions_all_same_score": 1,
+      "questions_same_top5_across_runs": 12
+    },
+    "llama3.2:3b": {
+      "unparsed_replies": 1,
+      "questions_all_same_score": 0,
+      "questions_same_top5_across_runs": 12
+    },
+    "gemma3:12b": {
+      "unparsed_replies": 0,
+      "questions_all_same_score": 0,
+      "questions_same_top5_across_runs": 12
+    }
+  }
+}

@@ -1,0 +1,51 @@
+Collection size: 741; scorer gemma3:12b variant C
+holdout Q1
+holdout Q2
+holdout Q3
+holdout Q4
+holdout Q5
+holdout Q6
+holdout Q7
+holdout Q8
+holdout Q9
+holdout Q10
+holdout Q11
+
+=== holdout (eval_questions_holdout.json) ===
+#    embed strict embed len. 12B strict 12B len.  expected
+1               1          1          1        1  stopped-managing-kubernetes-start-managing-applications.md
+2               1          1          1        1  direct-connect-expressroute-asymmetric-bgp-routing.md
+3               1          1          1        1  cost-profile-demand-shape-cloud-elasticity.md
+4               1          1          1        1  data-sovereignty-in-practice.md
+5              27         27         27       27  ai-in-the-stack-08-agentic-governance.md
+6               1          1          1        1  vpcs-and-vnets-explained.md
+7               1          1          1        1  09-containerized-ollama-memory-overhead.md
+8               1          1          2        2  12-real-kubernetes-memory-ceiling.md
+9               1          1          1        1  04-quantization-q4-q8-fp16.md
+10              1          1          1        1  infra-as-code.md
+11              -                                 control (no answer)
+
+setting         labels   cap     hit@1  hit@3  hit@5    mrr  exp_chunks_top5
+embedding only  strict   none     0.90   0.90   0.90   0.90             2.70
+embedding only  strict   1        0.90   0.90   1.00   0.92             1.00
+embedding only  lenient  none     0.90   0.90   0.90   0.90             3.00
+embedding only  lenient  1        0.90   0.90   1.00   0.92             1.10
+12B             strict   none     0.80   0.90   0.90   0.85             3.40
+12B             strict   1        0.80   0.90   1.00   0.87             1.00
+12B             lenient  none     0.80   0.90   0.90   0.85             3.50
+12B             lenient  1        0.80   0.90   1.00   0.87             1.10
+
+Top 3 (embedding distance / 12B score) for misses and controls
+Q5 What guardrails do I need before letting an AI tool make changes in pr
+   embed: [('ai-tooling-openshift-evaluation-framework.md', 202.8), ('ai-tooling-openshift-evaluation-framework.md', 218.1), ('ai-tooling-openshift-evaluation-framework.md', 228.5)]
+   12B:   [('ai-tooling-openshift-evaluation-framework.md', 9), ('ai-in-the-stack-06-n8n-workflows.md', 8), ('ai-tooling-openshift-evaluation-framework.md', 7)]
+Q8 What memory limit should a model-serving pod get so it doesn't get kil
+   embed: [('12-real-kubernetes-memory-ceiling.md', 240.6), ('09-containerized-ollama-memory-overhead.md', 255.6), ('11-oom-kubernetes-vs-podman.md', 258.1)]
+   12B:   [('09-containerized-ollama-memory-overhead.md', 10), ('12-real-kubernetes-memory-ceiling.md', 8), ('12-real-kubernetes-memory-ceiling.md', 8)]
+Q11 How do I write a declarative Jenkinsfile with parallel stages?
+   embed: [('ai-in-the-stack-06-n8n-workflows.md', 338.4), ('ai-in-the-stack-06-n8n-workflows.md', 345.7), ('ai-in-the-stack-02-rag-runbooks.md', 346.6)]
+   12B:   [('ai-in-the-stack-06-n8n-workflows.md', 3), ('ai-in-the-stack-06-n8n-workflows.md', 2), ('retry-logic-and-tiered-alerting-github-actions.md', 0)]
+
+Highest 12B score per question: [7, 10, 7, 8, 9, 9, 10, 10, 9, 9, 3]
+
+Saved eval_holdout_results_C.json

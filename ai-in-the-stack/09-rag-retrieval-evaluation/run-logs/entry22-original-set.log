@@ -1,0 +1,68 @@
+Collection size: 741; scorer gemma3:12b variant C
+original Q1
+original Q2
+original Q3
+original Q4
+original Q5
+original Q6
+original Q7
+original Q8
+original Q9
+original Q10
+original Q11
+original Q12
+original Q13
+original Q14
+
+=== original (eval_questions_v2.json) ===
+#    embed strict embed len. 12B strict 12B len.  expected
+1               1          1          1        1  retry-logic-and-tiered-alerting-github-actions.md
+2               1          1          1        1  secrets-management-multi-cloud-pipelines.md
+3               1          1          1        1  terraform-managed-openshift-state.md
+4               1          1          1        1  database-migrations-zero-downtime-deploys.md
+5               1          1          1        1  prompt-versioning-ci-openshift.md
+6               1          1          1        1  swapping-llm-providers-without-rewriting-stack.md
+7               8          8          3        3  mcp-server-architecture-platform-engineering-kubernetes.md
+8               1          1          1        1  pitw-01-zero-downtime-deployments.md
+9               1          1          1        1  ai-in-the-stack-02-rag-runbooks.md
+10              1          1          1        1  ai-in-the-stack-06-n8n-workflows.md
+11              1          1          1        1  what-are-containers.md
+12              7          7          1        1  managed-vs-self-hosted-handing-over-keys.md
+13              -                                 control (no answer)
+14              -                                 control (no answer)
+
+setting         labels   cap     hit@1  hit@3  hit@5    mrr  exp_chunks_top5
+embedding only  strict   none     0.83   0.83   0.83   0.86             3.17
+embedding only  strict   1        0.83   0.92   1.00   0.88             1.00
+embedding only  lenient  none     0.83   0.83   0.83   0.86             3.17
+embedding only  lenient  1        0.83   0.92   1.00   0.88             1.00
+12B             strict   none     0.92   1.00   1.00   0.94             3.50
+12B             strict   1        0.92   1.00   1.00   0.94             1.00
+12B             lenient  none     0.92   1.00   1.00   0.94             3.50
+12B             lenient  1        0.92   1.00   1.00   0.94             1.00
+
+Top 3 (embedding distance / 12B score) for misses and controls
+Q7 How can an AI agent safely read from my Kubernetes cluster?
+   embed: [('ai-tooling-openshift-evaluation-framework.md', 246.5), ('ai-tooling-openshift-evaluation-framework.md', 251.5), ('ai-in-the-stack-06-n8n-workflows.md', 253.3)]
+   12B:   [('ai-in-the-stack-06-n8n-workflows.md', 8), ('ai-in-the-stack-02-rag-runbooks.md', 7), ('mcp-server-architecture-platform-engineering-kubernetes.md', 7)]
+Q12 Should I run managed or self-hosted Kubernetes?
+   embed: [('kubernetes-at-scale.md', 235.5), ('what-are-containers.md', 247.1), ('what-are-containers.md', 260.0)]
+   12B:   [('managed-vs-self-hosted-handing-over-keys.md', 8), ('what-are-containers.md', 7), ('kubernetes-at-scale.md', 7)]
+Q13 How do I check pod status with oc?
+   embed: [('08-mcp-server-claude-code.md', 225.6), ('15-sse-reconnect-distance-instability.md', 314.3), ('mcp-server-architecture-platform-engineering-kubernetes.md', 323.5)]
+   12B:   [('13-hand-rolled-agent-loop.md', 3), ('07-chunking-retrieval-bias.md', 3), ('swapping-llm-providers-without-rewriting-stack.md', 3)]
+Q14 What's the best pizza topping?
+   embed: [('06-querying-embeddings-store.md', 448.5), ('07-chunking-retrieval-bias.md', 455.5), ('linux-basics-for-devops.md', 459.6)]
+   12B:   [('06-querying-embeddings-store.md', 0), ('07-chunking-retrieval-bias.md', 0), ('07-chunking-retrieval-bias.md', 0)]
+
+Highest 12B score per question: [9, 7, 8, 7, 8, 9, 8, 8, 9, 7, 7, 8, 3, 0]
+Traceback (most recent call last):
+  File "~/Downloads/eval_holdout.py", line 127, in <module>
+  File "~/Downloads/eval_holdout.py", line 62, in main
+  File "<python>/lib/python3.14/pathlib/__init__.py", line 787, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<python>/lib/python3.14/pathlib/__init__.py", line 771, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'eval_questions_holdout.json'

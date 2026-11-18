@@ -1,0 +1,540 @@
+{
+  "variant": "C",
+  "collection": 741,
+  "sets": {
+    "holdout": {
+      "per_question": [
+        {
+          "question": "A Helm sub-chart used an API version that was removed and still passed CI. How do I block that at deploy time?",
+          "expected": "stopped-managing-kubernetes-start-managing-applications.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "stopped-managing-kubernetes-start-managing-applications.md",
+              215.2
+            ],
+            [
+              "stopped-managing-kubernetes-start-managing-applications.md",
+              234.8
+            ],
+            [
+              "managed-vs-self-hosted-handing-over-keys.md",
+              235.1
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "stopped-managing-kubernetes-start-managing-applications.md",
+              7
+            ],
+            [
+              "stopped-managing-kubernetes-start-managing-applications.md",
+              7
+            ],
+            [
+              "managed-vs-self-hosted-handing-over-keys.md",
+              6
+            ]
+          ],
+          "max_score": 7,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "Traffic leaves the data centre over one private cloud link but comes back over another. How do I make the return path match?",
+          "expected": "direct-connect-expressroute-asymmetric-bgp-routing.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "direct-connect-expressroute-asymmetric-bgp-routing.md",
+              248.6
+            ],
+            [
+              "vpcs-and-vnets-explained.md",
+              252.7
+            ],
+            [
+              "direct-connect-expressroute-asymmetric-bgp-routing.md",
+              280.8
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "direct-connect-expressroute-asymmetric-bgp-routing.md",
+              10
+            ],
+            [
+              "direct-connect-expressroute-asymmetric-bgp-routing.md",
+              9
+            ],
+            [
+              "direct-connect-expressroute-asymmetric-bgp-routing.md",
+              7
+            ]
+          ],
+          "max_score": 10,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "How do I split the bill for a shared Kubernetes cluster between departments?",
+          "expected": "cost-profile-demand-shape-cloud-elasticity.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              285.5
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              298.0
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              314.6
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              7
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              3
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              3
+            ]
+          ],
+          "max_score": 7,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "Our customer data already stays in European regions. What else do residency rules expect from us?",
+          "expected": "data-sovereignty-in-practice.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "data-sovereignty-in-practice.md",
+              291.4
+            ],
+            [
+              "data-sovereignty-in-practice.md",
+              293.2
+            ],
+            [
+              "data-sovereignty-in-practice.md",
+              296.0
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "data-sovereignty-in-practice.md",
+              8
+            ],
+            [
+              "data-sovereignty-in-practice.md",
+              8
+            ],
+            [
+              "data-sovereignty-in-practice.md",
+              8
+            ]
+          ],
+          "max_score": 8,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "What guardrails do I need before letting an AI tool make changes in production?",
+          "expected": "ai-in-the-stack-08-agentic-governance.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "ai-tooling-openshift-evaluation-framework.md",
+              202.8
+            ],
+            [
+              "ai-tooling-openshift-evaluation-framework.md",
+              218.1
+            ],
+            [
+              "ai-tooling-openshift-evaluation-framework.md",
+              228.5
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "ai-tooling-openshift-evaluation-framework.md",
+              9
+            ],
+            [
+              "ai-in-the-stack-06-n8n-workflows.md",
+              8
+            ],
+            [
+              "ai-tooling-openshift-evaluation-framework.md",
+              7
+            ]
+          ],
+          "max_score": 9,
+          "pos_embedding only": {
+            "strict": 27,
+            "lenient": 27
+          },
+          "pos_12B": {
+            "strict": 27,
+            "lenient": 27
+          }
+        },
+        {
+          "question": "What is a private network in the cloud and how do subnets fit into it?",
+          "expected": "vpcs-and-vnets-explained.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "vpcs-and-vnets-explained.md",
+              222.2
+            ],
+            [
+              "vpcs-and-vnets-explained.md",
+              239.3
+            ],
+            [
+              "vpcs-and-vnets-explained.md",
+              255.8
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "vpcs-and-vnets-explained.md",
+              9
+            ],
+            [
+              "vpcs-and-vnets-explained.md",
+              7
+            ],
+            [
+              "vpcs-and-vnets-explained.md",
+              6
+            ]
+          ],
+          "max_score": 9,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "How much extra memory does a local model use when it runs inside a container instead of directly on the machine?",
+          "expected": "09-containerized-ollama-memory-overhead.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              218.4
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              258.1
+            ],
+            [
+              "11-oom-kubernetes-vs-podman.md",
+              259.0
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              10
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              10
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              9
+            ]
+          ],
+          "max_score": 10,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "What memory limit should a model-serving pod get so it doesn't get killed?",
+          "expected": "12-real-kubernetes-memory-ceiling.md",
+          "also": [
+            "11-oom-kubernetes-vs-podman.md"
+          ],
+          "embed_top3": [
+            [
+              "12-real-kubernetes-memory-ceiling.md",
+              240.6
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              255.6
+            ],
+            [
+              "11-oom-kubernetes-vs-podman.md",
+              258.1
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              10
+            ],
+            [
+              "12-real-kubernetes-memory-ceiling.md",
+              8
+            ],
+            [
+              "12-real-kubernetes-memory-ceiling.md",
+              8
+            ]
+          ],
+          "max_score": 10,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 2,
+            "lenient": 2
+          }
+        },
+        {
+          "question": "Does a lower-precision version of a model save much RAM, and does it answer worse?",
+          "expected": "04-quantization-q4-q8-fp16.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "04-quantization-q4-q8-fp16.md",
+              255.0
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              256.0
+            ],
+            [
+              "09-containerized-ollama-memory-overhead.md",
+              256.7
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "04-quantization-q4-q8-fp16.md",
+              9
+            ],
+            [
+              "04-quantization-q4-q8-fp16.md",
+              8
+            ],
+            [
+              "03-1b-vs-3b-memory-comparison.md",
+              7
+            ]
+          ],
+          "max_score": 9,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "Why should I define cloud resources in files instead of clicking through the web console?",
+          "expected": "infra-as-code.md",
+          "also": [],
+          "embed_top3": [
+            [
+              "infra-as-code.md",
+              278.6
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              299.2
+            ],
+            [
+              "cost-profile-demand-shape-cloud-elasticity.md",
+              301.2
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "infra-as-code.md",
+              9
+            ],
+            [
+              "infra-as-code.md",
+              8
+            ],
+            [
+              "infra-as-code.md",
+              8
+            ]
+          ],
+          "max_score": 9,
+          "pos_embedding only": {
+            "strict": 1,
+            "lenient": 1
+          },
+          "pos_12B": {
+            "strict": 1,
+            "lenient": 1
+          }
+        },
+        {
+          "question": "How do I write a declarative Jenkinsfile with parallel stages?",
+          "expected": null,
+          "also": [],
+          "embed_top3": [
+            [
+              "ai-in-the-stack-06-n8n-workflows.md",
+              338.4
+            ],
+            [
+              "ai-in-the-stack-06-n8n-workflows.md",
+              345.7
+            ],
+            [
+              "ai-in-the-stack-02-rag-runbooks.md",
+              346.6
+            ]
+          ],
+          "rerank_top3": [
+            [
+              "ai-in-the-stack-06-n8n-workflows.md",
+              3
+            ],
+            [
+              "ai-in-the-stack-06-n8n-workflows.md",
+              2
+            ],
+            [
+              "retry-logic-and-tiered-alerting-github-actions.md",
+              0
+            ]
+          ],
+          "max_score": 3
+        }
+      ],
+      "summary": {
+        "embedding only|strict|none": {
+          "hit@1": 0.9,
+          "hit@3": 0.9,
+          "hit@5": 0.9,
+          "mrr": 0.9037037037037037,
+          "exp_chunks_top5": 2.7,
+          "distinct_top5": 2.5,
+          "series_top5": 1.4
+        },
+        "embedding only|strict|1": {
+          "hit@1": 0.9,
+          "hit@3": 0.9,
+          "hit@5": 1.0,
+          "mrr": 0.9199999999999999,
+          "exp_chunks_top5": 1.0,
+          "distinct_top5": 5.0,
+          "series_top5": 1.4
+        },
+        "embedding only|lenient|none": {
+          "hit@1": 0.9,
+          "hit@3": 0.9,
+          "hit@5": 0.9,
+          "mrr": 0.9037037037037037,
+          "exp_chunks_top5": 3.0,
+          "distinct_top5": 2.5,
+          "series_top5": 1.4
+        },
+        "embedding only|lenient|1": {
+          "hit@1": 0.9,
+          "hit@3": 0.9,
+          "hit@5": 1.0,
+          "mrr": 0.9199999999999999,
+          "exp_chunks_top5": 1.1,
+          "distinct_top5": 5.0,
+          "series_top5": 1.4
+        },
+        "12B|strict|none": {
+          "hit@1": 0.8,
+          "hit@3": 0.9,
+          "hit@5": 0.9,
+          "mrr": 0.8537037037037036,
+          "exp_chunks_top5": 3.4,
+          "distinct_top5": 1.8,
+          "series_top5": 1.5
+        },
+        "12B|strict|1": {
+          "hit@1": 0.8,
+          "hit@3": 0.9,
+          "hit@5": 1.0,
+          "mrr": 0.8699999999999999,
+          "exp_chunks_top5": 1.0,
+          "distinct_top5": 5.0,
+          "series_top5": 1.4
+        },
+        "12B|lenient|none": {
+          "hit@1": 0.8,
+          "hit@3": 0.9,
+          "hit@5": 0.9,
+          "mrr": 0.8537037037037036,
+          "exp_chunks_top5": 3.5,
+          "distinct_top5": 1.8,
+          "series_top5": 1.5
+        },
+        "12B|lenient|1": {
+          "hit@1": 0.8,
+          "hit@3": 0.9,
+          "hit@5": 1.0,
+          "mrr": 0.8699999999999999,
+          "exp_chunks_top5": 1.1,
+          "distinct_top5": 5.0,
+          "series_top5": 1.4
+        }
+      }
+    }
+  }
+}
